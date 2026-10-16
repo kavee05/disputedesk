@@ -1,10 +1,11 @@
 import Link from "next/link";
+import { CheckCircle2, CircleDollarSign, Clock, Gauge, Receipt } from "lucide-react";
 import { statusOf } from "@/lib/app";
 import { listCases } from "@/lib/cases/repo";
 import { isOpen } from "@/lib/cases/status";
 import { listRuns } from "@/lib/agent/runs";
 import { getPolicy } from "@/lib/agent/policy";
-import { AdjudicationBadge, Empty, money, PageHeader, SourceBadge, StatusPill } from "@/components/ui";
+import { AdjudicationBadge, Empty, ItemTile, money, PageHeader, Panel, PanelHeader, SourceBadge, Stat, StatusPill } from "@/components/ui";
 
 export default function ImpactPage() {
   const policy = getPolicy();
@@ -12,8 +13,7 @@ export default function ImpactPage() {
   const runs = listRuns();
   const submitted = runs.filter((r) => r.status === "submitted");
   // "Handled" means the agent actually sent a step to PayPal for the case.
-  const handledIds = new Set(submitted.map((r) => r.caseId));
-  const handled = handledIds.size;
+  const handled = new Set(submitted.map((r) => r.caseId)).size;
   const auto = submitted.filter((r) => r.data.execution?.by === "policy").length;
   const approved = submitted.length - auto;
 
@@ -34,64 +34,64 @@ export default function ImpactPage() {
         intro="Money only counts as defended when PayPal itself reports the case resolved in your favour. Refunds only count once PayPal reports the refund as completed. Totals cover every synced case."
       />
 
-      <section className="grid gap-px overflow-hidden rounded-lg border border-rule bg-rule sm:grid-cols-2 xl:grid-cols-4">
-        <Stat label="Money defended" value={money(defendedSandbox + defendedSim)} tone="text-pandan">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 xl:gap-4">
+        <Stat label="Money defended" value={money(defendedSandbox + defendedSim)} tone="text-pandan" icon={<CheckCircle2 className="h-4 w-4" />}>
           {defendedSandbox > 0 && <span className="block">{money(defendedSandbox)} confirmed by PayPal Sandbox</span>}
           {defendedSim > 0 && <span className="block">{money(defendedSim)} in simulated cases</span>}
           {defendedSandbox + defendedSim === 0 && <span className="block">No case resolved for you yet</span>}
         </Stat>
-        <Stat label="Handled by the agent" value={String(handled)}>
+        <Stat label="Handled by the agent" value={String(handled)} icon={<Gauge className="h-4 w-4" />}>
           {auto} sent automatically, {approved} after your approval
         </Stat>
-        <Stat label="Hours saved (estimate)" value={hoursSaved.toFixed(1)}>
-          {policy.hoursPerDispute}h by hand versus about 10 minutes of review, per case
+        <Stat label="Hours saved" value={hoursSaved.toFixed(1)} icon={<Clock className="h-4 w-4" />}>
+          Estimate: {policy.hoursPerDispute}h by hand versus about 10 minutes of review, per case
         </Stat>
-        <Stat label="Still at stake" value={money(atStake)}>
+        <Stat label="Still at stake" value={money(atStake)} icon={<CircleDollarSign className="h-4 w-4" />}>
           Open cases waiting on you, the buyer or PayPal
         </Stat>
-      </section>
+      </div>
 
-      <p className="mt-3 text-sm text-muted">
-        Refunded and confirmed: {money(refundedSandbox + refundedSim)}
-        {refundedSim > 0 && refundedSandbox > 0 ? ` (${money(refundedSandbox)} sandbox, ${money(refundedSim)} simulated)` : ""}. The hours figure is an estimate
-        from your policy settings, not a measurement.
+      <p className="mt-4 flex items-start gap-2 text-sm text-muted">
+        <Receipt className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+        <span>
+          Refunded and confirmed by PayPal: {money(refundedSandbox + refundedSim)}
+          {refundedSim > 0 && refundedSandbox > 0 ? ` (${money(refundedSandbox)} sandbox, ${money(refundedSim)} simulated)` : ""}. Hours saved is an estimate from your
+          policy settings, not a measurement.
+        </span>
       </p>
 
-      <h2 className="mb-3 mt-8 text-2xl font-bold">Closed cases</h2>
-      {closed.length === 0 ? (
-        <Empty title="No closed cases yet">When PayPal resolves a case, it shows up here with the outcome PayPal reported.</Empty>
-      ) : (
-        <ul className="overflow-hidden rounded-lg border border-rule bg-surface">
-          {closed.map(({ c, s }) => (
-            <li key={c.id} className="flex flex-col gap-2 border-b border-rule px-4 py-3 last:border-0 sm:flex-row sm:items-center sm:justify-between">
-              <div className="min-w-0">
-                <Link href={`/cases/${encodeURIComponent(c.id)}`} className="font-bold hover:underline">
-                  {c.itemSummary ?? c.reasonLabel}
+      <Panel className="mt-8">
+        <PanelHeader title="Closed cases" description="Each with the outcome PayPal reported" />
+        {closed.length === 0 ? (
+          <div className="p-5">
+            <Empty title="No closed cases yet">When PayPal resolves a case, it shows up here with the outcome PayPal reported.</Empty>
+          </div>
+        ) : (
+          <ul className="divide-y divide-rule">
+            {closed.map(({ c, s }) => (
+              <li key={c.id}>
+                <Link href={`/cases/${encodeURIComponent(c.id)}`} className="flex flex-col gap-3 px-5 py-4 hover:bg-paper/70 sm:flex-row sm:items-center sm:justify-between">
+                  <span className="flex min-w-0 items-start gap-3">
+                    <ItemTile name={c.itemSummary ?? c.reasonLabel} />
+                    <span className="min-w-0">
+                      <span className="block font-semibold">{c.itemSummary ?? c.reasonLabel}</span>
+                      <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[0.8rem] text-muted">
+                        {c.reasonLabel} <SourceBadge source={c.source} />
+                        {s.sandboxAdjudication && <AdjudicationBadge source={c.source} />}
+                      </span>
+                      <span className="mt-0.5 block text-xs text-faint [overflow-wrap:anywhere]">{s.detail}</span>
+                    </span>
+                  </span>
+                  <span className="flex shrink-0 items-center gap-3 pl-12 sm:pl-0">
+                    <StatusPill status={s} />
+                    <span className="num text-[1.05rem] font-semibold">{money(c.amount, c.currency)}</span>
+                  </span>
                 </Link>
-                <p className="mt-0.5 flex flex-wrap items-center gap-2 text-sm text-muted">
-                  {c.reasonLabel} <SourceBadge source={c.source} />
-                  {s.sandboxAdjudication && <AdjudicationBadge source={c.source} />}
-                </p>
-                <p className="mt-0.5 break-words text-xs text-muted">{s.detail}</p>
-              </div>
-              <div className="flex shrink-0 items-center gap-3">
-                <StatusPill status={s} />
-                <span className="num text-lg font-bold">{money(c.amount, c.currency)}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </Panel>
     </>
-  );
-}
-
-function Stat({ label, value, tone = "", children }: { label: string; value: string; tone?: string; children: React.ReactNode }) {
-  return (
-    <div className="bg-surface p-5">
-      <p className="text-sm text-muted">{label}</p>
-      <p className={`num mt-1 text-[2.2rem] font-extrabold leading-none ${tone}`}>{value}</p>
-      <p className="mt-2 text-sm text-muted">{children}</p>
-    </div>
   );
 }

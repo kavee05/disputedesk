@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { ArrowDownLeft, ArrowUpRight, Bot, Cog, ShieldCheck, SlidersHorizontal, UserRound } from "lucide-react";
 import { listAudit, type AuditKind } from "@/lib/audit";
-import { dateTime, Empty, PageHeader } from "@/components/ui";
+import { dateTime, Empty, PageHeader, Panel } from "@/components/ui";
 
 const KINDS: { key: AuditKind | "all"; label: string }[] = [
   { key: "all", label: "Everything" },
@@ -12,14 +13,14 @@ const KINDS: { key: AuditKind | "all"; label: string }[] = [
   { key: "seller_action", label: "Your actions" },
 ];
 
-const KIND_STYLE: Record<string, string> = {
-  agent_decision: "bg-sky-soft text-sky",
-  policy_gate: "bg-paper text-ink-soft border border-rule",
-  paypal_response: "bg-pandan-soft text-pandan",
-  paypal_request: "bg-paper text-muted border border-rule",
-  guardrail: "bg-chili-soft text-chili",
-  seller_action: "bg-turmeric-soft text-turmeric-ink",
-  system: "bg-paper text-muted border border-rule",
+const KIND_STYLE: Record<string, { icon: typeof Bot; tone: string }> = {
+  agent_decision: { icon: Bot, tone: "bg-sky-soft text-sky" },
+  policy_gate: { icon: SlidersHorizontal, tone: "bg-ink/[0.07] text-ink" },
+  paypal_response: { icon: ArrowDownLeft, tone: "bg-pandan-soft text-pandan" },
+  paypal_request: { icon: ArrowUpRight, tone: "bg-paper text-muted" },
+  guardrail: { icon: ShieldCheck, tone: "bg-chili-soft text-chili" },
+  seller_action: { icon: UserRound, tone: "bg-turmeric-soft text-turmeric-ink" },
+  system: { icon: Cog, tone: "bg-paper text-muted" },
 };
 
 export default async function AuditPage({ searchParams }: { searchParams: Promise<{ kind?: string; case?: string }> }) {
@@ -40,54 +41,72 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
         intro="Every agent decision, every Policy Gate result and every call to PayPal, with PayPal's responses stored exactly as received. Credentials are never logged."
       />
       {caseId && (
-        <p className="mb-3 text-sm">
-          Showing one case: <span className="break-all font-bold">{caseId}</span>.{" "}
-          <Link href={kind === "all" ? "/audit" : `/audit?kind=${kind}`} className="underline underline-offset-4">
+        <p className="mb-4 text-sm">
+          Showing one case: <span className="break-all font-semibold">{caseId}</span>.{" "}
+          <Link href={kind === "all" ? "/audit" : `/audit?kind=${kind}`} className="font-medium underline underline-offset-4">
             Show all cases
           </Link>
         </p>
       )}
-      <div className="mb-4 flex flex-wrap gap-2" role="tablist" aria-label="Filter entries">
-        {KINDS.map((k) => (
-          <Link
-            key={k.key}
-            role="tab"
-            aria-selected={kind === k.key}
-            href={qs(k.key)}
-            className={`rounded-full px-3.5 py-1.5 text-sm ${kind === k.key ? "bg-ink text-white" : "border border-rule bg-surface text-ink-soft hover:border-ink"}`}
-          >
-            {k.label}
-          </Link>
-        ))}
-      </div>
-      {entries.length === 0 ? (
-        <Empty title="Nothing logged yet">Run the agent on a dispute and every step will show up here.</Empty>
-      ) : (
-        <ol className="overflow-hidden rounded-lg border border-rule bg-surface">
-          {entries.map((e) => (
-            <li key={e.id} className="border-b border-rule px-4 py-3 last:border-0">
-              <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-3">
-                <span className="shrink-0 text-xs text-muted sm:w-28">{dateTime(e.at)}</span>
-                <span className={`w-fit shrink-0 rounded px-1.5 py-px text-xs ${KIND_STYLE[e.kind] ?? ""}`}>{KINDS.find((k) => k.key === e.kind)?.label ?? e.kind}</span>
-                <div className="min-w-0 flex-1">
-                  <p className="break-words text-[0.95rem]">{e.summary}</p>
-                  {e.caseId && !caseId && (
-                    <Link href={`/cases/${encodeURIComponent(e.caseId)}`} className="break-all text-xs text-muted underline underline-offset-2">
-                      {e.caseId}
-                    </Link>
-                  )}
-                  {e.data !== null && typeof e.data === "object" && Object.keys(e.data).length > 0 && (
-                    <details className="mt-1">
-                      <summary className="cursor-pointer text-xs text-ink-soft">Details</summary>
-                      <pre className="mt-1 max-h-72 overflow-auto rounded bg-paper p-2 text-xs">{JSON.stringify(e.data, null, 2)}</pre>
-                    </details>
-                  )}
-                </div>
-              </div>
-            </li>
-          ))}
-        </ol>
-      )}
+
+      <Panel>
+        <div className="border-b border-rule px-4 py-3 sm:px-5">
+          <div role="tablist" aria-label="Filter entries" className="flex flex-wrap gap-1 rounded-lg bg-paper p-1">
+            {KINDS.map((k) => (
+              <Link
+                key={k.key}
+                role="tab"
+                aria-selected={kind === k.key}
+                href={qs(k.key)}
+                className={`rounded-md px-3 py-1.5 text-sm font-medium ${
+                  kind === k.key ? "bg-surface text-ink shadow-[0_1px_2px_rgba(24,33,74,0.12)]" : "text-muted hover:text-ink"
+                }`}
+              >
+                {k.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+        {entries.length === 0 ? (
+          <div className="p-5">
+            <Empty title="Nothing logged yet">Run the agent on a dispute and every step shows up here.</Empty>
+          </div>
+        ) : (
+          <ol className="divide-y divide-rule">
+            {entries.map((e) => {
+              const style = KIND_STYLE[e.kind] ?? KIND_STYLE.system;
+              const Icon = style.icon;
+              return (
+                <li key={e.id} className="flex gap-3 px-4 py-3.5 sm:px-5">
+                  <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${style.tone}`} title={KINDS.find((k) => k.key === e.kind)?.label ?? e.kind}>
+                    <Icon className="h-4 w-4" aria-hidden />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+                      <p className="break-words text-[0.92rem] font-medium">{e.summary}</p>
+                      <span className="shrink-0 text-xs text-faint">{dateTime(e.at)}</span>
+                    </div>
+                    <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+                      <span className="text-muted">{KINDS.find((k) => k.key === e.kind)?.label ?? "System"}</span>
+                      {e.caseId && !caseId && (
+                        <Link href={`/cases/${encodeURIComponent(e.caseId)}`} className="break-all text-muted underline underline-offset-2 hover:text-ink">
+                          {e.caseId}
+                        </Link>
+                      )}
+                    </div>
+                    {e.data !== null && typeof e.data === "object" && Object.keys(e.data).length > 0 && (
+                      <details className="mt-1.5">
+                        <summary className="cursor-pointer text-xs font-medium text-ink-soft">Details</summary>
+                        <pre className="mt-1.5 max-h-72 overflow-auto rounded-lg bg-paper p-3 text-xs">{JSON.stringify(e.data, null, 2)}</pre>
+                      </details>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        )}
+      </Panel>
     </>
   );
 }

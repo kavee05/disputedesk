@@ -1,25 +1,32 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #1f2a5c; /* batik indigo, brand and text */
-  --color-ink-soft: #3a4677;
-  --color-muted: #5a6380;
-  --color-paper: #f2f4f8; /* cool blue-grey page */
+  /* Batik indigo: brand, primary text and the sidebar */
+  --color-ink: #1c2654;
+  --color-ink-soft: #3b4675;
+  --color-night: #18214a; /* sidebar */
+  --color-night-2: #222c5c; /* sidebar hover */
+  --color-muted: #5f6886;
+  --color-faint: #8a92ad;
+  --color-paper: #f6f7fb; /* canvas */
   --color-surface: #ffffff;
-  --color-rule: #d6dbe6;
-  --color-rule-strong: #b9c1d3;
+  --color-rule: #e3e7f0;
+  --color-rule-strong: #c9d0e0;
   --color-turmeric: #d99a1e; /* needs you, deadlines */
-  --color-turmeric-soft: #fbf1dc;
+  --color-turmeric-soft: #fdf3dd;
   --color-turmeric-ink: #7a5208;
   --color-pandan: #2e7a57; /* confirmed wins */
-  --color-pandan-soft: #e3f2ea;
+  --color-pandan-soft: #e4f3eb;
   --color-chili: #bf3f2c; /* losses, errors */
-  --color-chili-soft: #f9e6e2;
-  --color-sky: #2f5fb3; /* processing at PayPal */
-  --color-sky-soft: #e5edfa;
+  --color-chili-soft: #fbe9e5;
+  --color-sky: #2f5fb3; /* at PayPal, processing */
+  --color-sky-soft: #e7eefb;
 
   --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-atkinson), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-panel: 0 1px 2px rgba(24, 33, 74, 0.05), 0 4px 16px -6px rgba(24, 33, 74, 0.08);
+  --shadow-lift: 0 2px 4px rgba(24, 33, 74, 0.06), 0 12px 32px -12px rgba(24, 33, 74, 0.18);
 }
 
 html {
@@ -29,7 +36,7 @@ html {
 
 body {
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: 0.9375rem;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
@@ -39,18 +46,19 @@ h2,
 h3 {
   font-family: var(--font-display);
   line-height: 1.15;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 
 .num {
   font-family: var(--font-display);
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-sky);
+  outline: 2px solid var(--color-sky);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -62,9 +70,49 @@ h3 {
   }
 }
 
-/* Demo strip: diagonal hatching so simulated mode is impossible to miss. */
+/* A faint batik dot motif on the sidebar, the one decorative texture. */
+.batik {
+  background-color: var(--color-night);
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.07) 1px, transparent 1.5px),
+    radial-gradient(circle at 10px 10px, rgba(217, 154, 30, 0.08) 1.2px, transparent 1.8px);
+  background-size: 20px 20px, 20px 20px;
+}
+
+/* Demo strip: hatching so simulated mode is impossible to miss. */
 .hatch {
-  background-image: repeating-linear-gradient(-45deg, var(--color-turmeric-soft) 0 10px, #f6e3b8 10px 20px);
+  background-image: repeating-linear-gradient(-45deg, var(--color-turmeric-soft) 0 10px, #f8e6bd 10px 20px);
+}
+
+/* Switch built on a native checkbox, so forms and screen readers just work. */
+.switch {
+  appearance: none;
+  position: relative;
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  background: var(--color-rule-strong);
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 0.2rem;
+  left: 0.2rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(24, 33, 74, 0.3);
+  transition: transform 160ms ease;
+}
+.switch:checked {
+  background: var(--color-ink);
+}
+.switch:checked::after {
+  transform: translateX(1.1rem);
 }
 
 @keyframes tip {
@@ -73,6 +121,5 @@ h3 {
   }
 }
 .scale-beam {
-  transform-origin: 50% 50%;
   animation: tip 900ms cubic-bezier(0.3, 1.4, 0.5, 1) both;
 }

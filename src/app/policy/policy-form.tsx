@@ -1,19 +1,50 @@
 "use client";
 
 import { useActionState } from "react";
+import { Save } from "lucide-react";
 import { savePolicyAction } from "@/app/actions";
 import type { SellerPolicy } from "@/lib/agent/policy";
-import { Result } from "@/components/action-button";
+import { BUTTON_BASE, BUTTON_STYLES, Result } from "@/components/action-button";
 
-const field = "mt-1 w-full rounded-md border border-rule-strong bg-surface px-3 py-2 text-[0.95rem]";
+const input =
+  "w-full rounded-lg border border-rule-strong bg-surface px-3 py-2 text-[0.92rem] outline-none focus:border-sky focus:ring-2 focus:ring-sky/15";
 
-function Toggle({ name, label, hint, defaultChecked }: { name: string; label: string; hint: string; defaultChecked: boolean }) {
+// A settings section: what it is on the left, the controls on the right.
+// Headings are plain h2 elements (not fieldset legends, which browsers draw
+// across the box border).
+function Section({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
   return (
-    <label className="flex cursor-pointer items-start gap-3">
-      <input type="checkbox" name={name} defaultChecked={defaultChecked} className="mt-1 h-5 w-5 shrink-0 accent-[#1f2a5c]" />
-      <span>
-        <span className="font-bold">{label}</span>
+    <section className="grid gap-4 border-b border-rule py-8 first:pt-0 last:border-0 md:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] md:gap-10">
+      <div>
+        <h2 className="text-[1.05rem] font-semibold">{title}</h2>
+        <p className="mt-1 text-sm text-muted">{description}</p>
+      </div>
+      <div className="min-w-0 rounded-xl border border-rule bg-surface shadow-[var(--shadow-panel)]">{children}</div>
+    </section>
+  );
+}
+
+function SwitchRow({ name, label, hint, defaultChecked }: { name: string; label: string; hint: string; defaultChecked: boolean }) {
+  const id = `sw-${name}`;
+  return (
+    <div className="flex items-start justify-between gap-4 border-b border-rule px-5 py-4 last:border-0">
+      <label htmlFor={id} className="min-w-0 cursor-pointer">
+        <span className="block font-medium">{label}</span>
         <span className="block text-sm text-muted">{hint}</span>
+      </label>
+      <input id={id} type="checkbox" role="switch" name={name} defaultChecked={defaultChecked} className="switch mt-0.5" />
+    </div>
+  );
+}
+
+function NumberField({ name, label, hint, unit, ...rest }: { name: string; label: string; hint: string; unit: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <label className="block min-w-0">
+      <span className="block font-medium">{label}</span>
+      <span className="block text-sm text-muted">{hint}</span>
+      <span className="mt-2 flex items-stretch">
+        <input name={name} type="number" className={`${input} rounded-r-none`} {...rest} />
+        <span className="flex items-center rounded-r-lg border border-l-0 border-rule-strong bg-paper px-3 text-sm text-muted">{unit}</span>
       </span>
     </label>
   );
@@ -22,63 +53,52 @@ function Toggle({ name, label, hint, defaultChecked }: { name: string; label: st
 export function PolicyForm({ policy, reasons }: { policy: SellerPolicy; reasons: [string, string][] }) {
   const [state, action, pending] = useActionState(savePolicyAction, null);
   return (
-    <form action={action} className="grid max-w-3xl gap-6">
-      <fieldset className="rounded-lg border border-rule bg-surface p-5">
-        <legend className="px-1 font-[family-name:var(--font-display)] text-xl font-bold">When the agent may act alone</legend>
-        <div className="mt-2 grid gap-4">
-          <Toggle name="autoActEnabled" label="Let the agent act on its own" hint="When off, every step waits for your approval." defaultChecked={policy.autoActEnabled} />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block">
-              <span className="font-bold">Auto-act limit (USD)</span>
-              <span className="block text-sm text-muted">Disputes above this amount always wait for you.</span>
-              <input name="autoActLimit" type="number" min={0} step="1" defaultValue={policy.autoActLimit} className={field} />
-            </label>
-            <label className="block">
-              <span className="font-bold">Minimum confidence (%)</span>
-              <span className="block text-sm text-muted">Below this, the agent asks you first.</span>
-              <input name="minConfidence" type="number" min={0} max={100} step="5" defaultValue={Math.round(policy.minConfidence * 100)} className={field} />
-            </label>
-          </div>
-          <Toggle name="allowAutoFight" label="Submit evidence automatically" hint="Lets the agent send evidence or a reply when the case is clear." defaultChecked={policy.allowAutoFight} />
-          <Toggle name="allowAutoRefund" label="Refund automatically" hint="Lets the agent accept small claims it cannot win." defaultChecked={policy.allowAutoRefund} />
+    <form action={action} className="max-w-5xl pb-4">
+      <Section title="When the agent may act alone" description="Cases inside every limit here are handled without waiting for you. Everything else comes to you first.">
+        <SwitchRow name="autoActEnabled" label="Let the agent act on its own" hint="When off, every step waits for your approval." defaultChecked={policy.autoActEnabled} />
+        <div className="grid gap-5 border-b border-rule px-5 py-4 sm:grid-cols-2">
+          <NumberField name="autoActLimit" label="Auto-act limit" hint="Larger disputes always wait for you." unit="USD" min={0} step="1" defaultValue={policy.autoActLimit} />
+          <NumberField
+            name="minConfidence"
+            label="Minimum confidence"
+            hint="Below this, the agent asks you first."
+            unit="%"
+            min={0}
+            max={100}
+            step="5"
+            defaultValue={Math.round(policy.minConfidence * 100)}
+          />
         </div>
-      </fieldset>
+        <SwitchRow name="allowAutoFight" label="Submit evidence automatically" hint="Lets the agent send evidence or a reply when the case is clear." defaultChecked={policy.allowAutoFight} />
+        <SwitchRow name="allowAutoRefund" label="Refund automatically" hint="Lets the agent accept small claims it cannot win." defaultChecked={policy.allowAutoRefund} />
+      </Section>
 
-      <fieldset className="rounded-lg border border-rule bg-surface p-5">
-        <legend className="px-1 font-[family-name:var(--font-display)] text-xl font-bold">Never act alone on these</legend>
-        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+      <Section title="Never act alone on these" description="Dispute reasons that always come to you, whatever the amount or confidence.">
+        <div className="grid gap-x-6 gap-y-1 p-3 sm:grid-cols-2">
           {reasons.map(([code, label]) => (
-            <label key={code} className="flex cursor-pointer items-center gap-2.5">
-              <input type="checkbox" name="neverAutoReasons" value={code} defaultChecked={policy.neverAutoReasons.includes(code)} className="h-4 w-4 accent-[#1f2a5c]" />
-              {label}
+            <label key={code} className="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 hover:bg-paper">
+              <input type="checkbox" name="neverAutoReasons" value={code} defaultChecked={policy.neverAutoReasons.includes(code)} className="h-4 w-4 shrink-0 accent-[#1c2654]" />
+              <span>{label}</span>
             </label>
           ))}
         </div>
-      </fieldset>
+      </Section>
 
-      <fieldset className="rounded-lg border border-rule bg-surface p-5">
-        <legend className="px-1 font-[family-name:var(--font-display)] text-xl font-bold">Your numbers</legend>
-        <div className="mt-2 grid gap-4 sm:grid-cols-2">
-          <label className="block">
-            <span className="font-bold">Your time, per hour (USD)</span>
-            <span className="block text-sm text-muted">Used to weigh fighting against refunding.</span>
-            <input name="hourlyValue" type="number" min={0} step="1" defaultValue={policy.hourlyValue} className={field} />
-          </label>
-          <label className="block">
-            <span className="font-bold">Hours a dispute takes by hand</span>
-            <span className="block text-sm text-muted">Used for the hours-saved estimate.</span>
-            <input name="hoursPerDispute" type="number" min={0} step="0.25" defaultValue={policy.hoursPerDispute} className={field} />
-          </label>
+      <Section title="Your numbers" description="Used to weigh fighting against refunding, and for the hours-saved estimate.">
+        <div className="grid gap-5 border-b border-rule px-5 py-4 sm:grid-cols-2">
+          <NumberField name="hourlyValue" label="Your time, per hour" hint="What an hour of your time is worth." unit="USD" min={0} step="1" defaultValue={policy.hourlyValue} />
+          <NumberField name="hoursPerDispute" label="Time a dispute takes by hand" hint="Used for the hours-saved estimate." unit="hours" min={0} step="0.25" defaultValue={policy.hoursPerDispute} />
         </div>
-        <label className="mt-4 block">
-          <span className="font-bold">Your shipping and returns policy</span>
+        <label className="block px-5 py-4">
+          <span className="block font-medium">Your shipping and returns policy</span>
           <span className="block text-sm text-muted">The agent may cite this as your own policy. It is never presented as a PayPal record.</span>
-          <textarea name="storePolicy" rows={4} maxLength={2000} defaultValue={policy.storePolicy} className={field} />
+          <textarea name="storePolicy" rows={4} maxLength={2000} defaultValue={policy.storePolicy} className={`${input} mt-2 resize-y`} />
         </label>
-      </fieldset>
+      </Section>
 
-      <div className="flex flex-wrap items-center gap-4">
-        <button type="submit" disabled={pending} className="min-h-10 rounded-md bg-ink px-5 py-2 font-bold text-white hover:bg-ink-soft disabled:opacity-60">
+      <div className="sticky bottom-0 z-10 -mx-4 mt-2 flex flex-wrap items-center gap-4 border-t border-rule bg-surface px-4 py-3.5 shadow-[0_-8px_24px_-12px_rgba(24,33,74,0.18)] sm:bottom-4 sm:mx-0 sm:rounded-xl sm:border sm:px-5">
+        <button type="submit" disabled={pending} className={`${BUTTON_BASE} ${BUTTON_STYLES.primary}`}>
+          <Save className="h-4 w-4" aria-hidden />
           {pending ? "Saving" : "Save policy"}
         </button>
         <Result state={state} />
