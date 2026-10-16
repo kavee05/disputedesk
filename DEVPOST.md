@@ -73,5 +73,5 @@ nextjs, typescript, react, tailwindcss, sqlite, drizzle, zod, paypal-disputes-ap
 ## Try it
 
 - Live demo (demo mode, simulated PayPal, real AI): HOSTED_URL_GOES_HERE
-- Code and setup: GITHUB_URL_GOES_HERE
+- Code and setup: https://github.com/kavee05/disputedesk
 - Run locally with one command: `npm install && npm run demo`

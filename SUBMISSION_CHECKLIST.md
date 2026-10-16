@@ -37,7 +37,7 @@ Legend: **Done** means it is in the repo. **You** means only you can do it.
 ## Links to fill in after you have them
 
 - [ ] Replace `HOSTED_URL_GOES_HERE` in `README.md` and `DEVPOST.md` with your Render URL
-- [ ] Replace `GITHUB_URL_GOES_HERE` in `DEVPOST.md` with your repo URL
+- [x] GitHub URL filled in: https://github.com/kavee05/disputedesk
 
 ## Steps only you can do
 
