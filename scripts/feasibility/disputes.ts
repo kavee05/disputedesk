@@ -144,6 +144,15 @@ if (cmd === "list") {
     }
   }
   saveState(state);
+} else if (cmd === "find") {
+  // Read-only: look up disputes by each case's capture id, for cases the
+  // default list did not return.
+  for (const [key, c] of Object.entries(state.cases)) {
+    if (!c.captureId) continue;
+    const res = await api(`dispute-find-${key}`, "GET", `/v1/customer/disputes?disputed_transaction_id=${c.captureId}`);
+    const items = res.body?.items ?? [];
+    console.log(`  ${key} tx ${c.captureId}: ${items.map((d: any) => `${d.dispute_id} ${d.status} ${d.dispute_life_cycle_stage}`).join("; ") || "no dispute"}`);
+  }
 } else if (cmd === "inspect" && arg1) {
   await inspect(arg1);
 } else if (cmd === "step" && arg1 && arg2) {
