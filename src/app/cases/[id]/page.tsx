@@ -309,7 +309,9 @@ function AgentSteps({ run, caseId, currency, evidence }: { run: AgentRun; caseId
                 {verification.unsupported.length} claim(s) are not backed by evidence. Check the draft before sending.
               </p>
             )}
-            {writer.missing_evidence.length > 0 && <p className="mb-3 text-sm text-muted">Missing: {writer.missing_evidence.join("; ")}.</p>}
+            {writer.missing_evidence.length > 0 && (
+              <p className="mb-3 text-sm text-muted">Missing: {writer.missing_evidence.map((m) => m.replace(/[.\s]+$/, "")).join("; ")}.</p>
+            )}
             <DraftEditor runId={run.id} caseId={caseId} action={plan.action} initial={run.draftText} editable={run.status === "awaiting_approval"} />
           </>
         ) : rec === "ESCALATE" ? (

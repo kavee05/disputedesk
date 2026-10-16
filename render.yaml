@@ -1,0 +1,27 @@
+# Render blueprint for the public demo.
+# The hosted copy runs in demo mode: PayPal is simulated, no PayPal secrets
+# live on a public server. Gemini does the reasoning if GEMINI_API_KEY is set.
+# The free plan's disk is temporary, so the demo re-seeds itself on each boot.
+services:
+  - type: web
+    name: disputedesk
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: DEMO_MODE
+        value: "true"
+      - key: DATABASE_PATH
+        value: data/demo.db
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-3.8-flash
+      - key: GEMINI_THINKING_LEVEL
+        value: low
+      - key: ADMIN_PASSCODE
+        sync: false

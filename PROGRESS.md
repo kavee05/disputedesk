@@ -3,32 +3,40 @@
 Deadline: Nov 12, 2026, 12:00pm PST.
 
 ## Done
-- Phase 0 scaffold: git repo, MIT LICENSE, `.gitignore` (all `.env*` except the example), `.env.example`.
-- Sandbox probe scripts in `scripts/feasibility/`:
-  - `auth.ts` gets a token and lists the app's relevant scopes
-  - `orders.ts` creates 5 goods-and-services checkout orders (D1 to D4 plus C1), captures them, adds tracking to D1 and D2, reads it back
-  - `disputes.ts` list, map disputes to orders, inspect, and link-gated steps (final-state actions need `--final`)
-  - `chargeback.ts` tries the sandbox-only chargeback endpoint on C1
-  - `toolkit.ts` calls the PayPal Agent Toolkit dispute tools directly, without an LLM
-- Desk research: the Agent Toolkit (v1.11.0) has only `list_disputes`, `get_dispute`, `accept_dispute_claim` for disputes, so evidence, offers and messages must go through REST.
 
-- First sandbox app (non-US seller) left every capture PENDING with `RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION`. Switched to a new US Business + US Personal pair and a new Merchant app (`APP-3MW60764R97604927`, has dispute, tracking, invoicing and transaction search scopes).
-- 5 goods-and-services orders captured on the US app, all `COMPLETED` per `GET /v2/payments/captures/{id}`. Tracking added to D1 and D2 and read back via both `/v2/checkout/orders/{id}` and `/v1/shipping/trackers`.
+**Phase 0: feasibility** ([FEASIBILITY.md](FEASIBILITY.md))
+- Probed the real PayPal Sandbox: orders, captures, tracking, all dispute actions, Agent Toolkit.
+- Learned: use US sandbox accounts; the sandbox only accepts evidence type OTHER; actions settle asynchronously; the refund record updates before the dispute record; the adjudicate link appears 18 to 28 minutes after evidence.
+- Real results: D1 won and D4 lost through sandbox adjudication, D3 refunded through accept-claim. D2 and C1 left open.
 
-| Case | Amount | Order | Capture (transaction) | Tracking |
-|---|---|---|---|---|
-| D1 | $48.00 | 4P95273424320082B | 62U865259J177000P | USPS 9400111899223197428490 |
-| D2 | $32.00 | 0RW29247BH657370J | 92777357PE885964Y | USPS 9400111899223197428506 |
-| D3 | $15.00 | 4JW9086092499472F | 5AC91803V9139624P | none |
-| D4 | $27.00 | 8GW19372YB480913V | 4E760678YD342835N | none |
-| C1 | $20.00 | 50H90340LE833200X | 98X219887P2678732 | none, reserved for chargeback probe |
+**Phase 1: core engine**
+- PayPal client with retries and redacted request logging. Sandbox gateway and a labelled simulator that copies measured sandbox behaviour.
+- Case model, sync, evidence collector with personal data scrubbing, demo seed of eight cases.
 
-## Next
-4. Kavee opens disputes D1 to D4 in the sandbox Resolution Center. Run `probe:chargeback` on C1.
-5. Run `probe:disputes -- map`, then the link-gated steps per case, then `probe:toolkit`.
-6. Write FEASIBILITY.md and stop for review.
+**Phase 2: agent pipeline**
+- Case Analyst and Evidence Writer on Gemini (`gemini-3.8-flash`, thinking level low, about 15 seconds per step), Claude optional. Schema-constrained JSON, validated with zod.
+- Expected value in code. Citation checks. Deterministic Policy Gate. Allowlisted, link-gated Executor that stores PayPal responses verbatim.
+- Time budget with a labelled offline fallback when the AI is slow or down.
 
-## Open questions
-- Does the seller app have permission to call `process-chargeback`? (probe will tell)
-- Does the sandbox accept a made-up USPS tracking number, and does a Resolution Center dispute reach `UNDER_REVIEW` so `adjudicate` shows up?
-- Rules agreed: anything settled by the sandbox `adjudicate` endpoint is labelled "Sandbox adjudication". Money counts as defended only when PayPal confirms it.
+**Phase 3: product UI**
+- Disputes inbox, case page with the four steps and the fight-or-refund scale, editable draft with approve and reject, Policy, Audit log, Impact, Demo cases (reset, sandbox test-order kit, guide), passcode unlock, error and empty states.
+- Checked 11 pages at 320, 375, 768, 1024, 1280 and 1440 pixels with an overlap and overflow script, plus screenshots at phone width. No issues left.
+- Tested end to end in demo mode and against the real sandbox (sync, real AI run on C1 that stopped at the gate, nothing sent).
+
+**Phase 4: submission package**
+- README (setup, architecture diagram, real vs simulated, AI tools, responsible design, limitations), DEVPOST.md, DEMO_SCRIPT.md, SUBMISSION_CHECKLIST.md, render.yaml.
+
+**Tests:** 32 passing (`npm test`).
+
+## Next (needs Kavee)
+
+1. Push to a public GitHub repo.
+2. Deploy to Render with a Gemini key (steps in SUBMISSION_CHECKLIST.md), then fill in the two URL placeholders.
+3. Prepare the sandbox cases and record the video from DEMO_SCRIPT.md.
+4. Fill in the Devpost form.
+
+## Notes and open questions
+
+- The local sandbox policy currently has automatic actions **off** (set during testing so nothing was sent to PayPal by accident). Turn it back on in Policy before recording scene 3 if you want the AUTO path visible.
+- The chargeback simulation probe (`process-chargeback`) was never run. It needs a fresh payment and your approval. It is not needed for the submission.
+- Evidence file uploads (photos) are a known gap, listed under Limitations.
