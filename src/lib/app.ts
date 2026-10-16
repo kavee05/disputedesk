@@ -7,8 +7,20 @@ import { seedDemoCases } from "./demo/seed";
 
 // Small server helpers shared by pages and actions.
 
+// Outcomes that come from the parties themselves, not from a PayPal decision.
+const PARTY_OUTCOME_REASONS = new Set(["SELLER_ISSUED_REFUND", "CANCELED_BY_BUYER", "ACCEPTED_OFFER"]);
+
+// Nobody at PayPal reviews sandbox cases, so a decided sandbox case can only
+// have been settled by the sandbox-only adjudicate tool, whoever called it.
+// Label all of those, not just the ones DisputeDesk adjudicated itself.
+export function settledBySandboxTool(c: Case): boolean {
+  if (c.sandboxAdjudicated) return true;
+  if (c.source !== "sandbox" || !c.outcome) return false;
+  return c.outcome.code !== "CANCELED_BY_BUYER" && !PARTY_OUTCOME_REASONS.has(c.outcome.reason ?? "");
+}
+
 export function statusOf(c: Case) {
-  return deriveStatus(c, c.confirmedRefunds ?? [], { sandboxAdjudicated: c.sandboxAdjudicated });
+  return deriveStatus(c, c.confirmedRefunds ?? [], { sandboxAdjudicated: settledBySandboxTool(c) });
 }
 
 // Demo mode seeds itself on first boot, so a fresh deploy is never empty.

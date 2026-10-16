@@ -120,7 +120,7 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
                   <dt className="text-muted">Outcome</dt>
                   <dd className="text-[0.8rem]">
                     {c.outcome.code.split("_").join("_​")}
-                    {c.outcome.reason ? `, ${c.outcome.reason}` : ""}
+                    {c.outcome.reason ? `, ${c.outcome.reason.split("_").join("_​")}` : ""}
                   </dd>
                 </>
               )}
@@ -263,11 +263,10 @@ function AgentSteps({ run, caseId, currency, evidence }: { run: AgentRun; caseId
         </div>
         <p className="mt-3 text-lg">
           Recommends <strong>{rec === "FIGHT" ? "fighting" : rec === "REFUND" ? "refunding" : "that you decide"}</strong>
-          {run.data.overrideFrom && <span className="text-muted"> (you chose this over the agent's {run.data.overrideFrom.toLowerCase()})</span>}.
-          <span className="text-muted">
-            {" "}
-            Win chance {Math.round(analyst.win_probability * 100)}%, confidence {Math.round(analyst.confidence * 100)}%.
-          </span>
+          {run.data.overrideFrom && <span className="text-muted"> (you chose this over the agent&apos;s {run.data.overrideFrom.toLowerCase()})</span>}.
+        </p>
+        <p className="text-muted">
+          Win chance {Math.round(analyst.win_probability * 100)}%, confidence {Math.round(analyst.confidence * 100)}%.
         </p>
         <p className="mt-2 max-w-[68ch]">{analyst.summary}</p>
         {analyst.injection_detected && (
@@ -335,7 +334,15 @@ function AgentSteps({ run, caseId, currency, evidence }: { run: AgentRun; caseId
       <Step n={3} title="Policy Gate" tone={gate.decision === "AUTO" ? "good" : gate.decision === "BLOCKED" ? "bad" : "warn"}>
         <p className="text-sm text-muted">Plain code, not AI. It checks the plan against your policy.</p>
         <p className="mt-2 font-bold">
-          {gate.decision === "AUTO" ? "Allowed to act on its own" : gate.decision === "BLOCKED" ? "Blocked" : "Needs your approval"}
+          {gate.decision === "AUTO"
+            ? "Allowed to act on its own"
+            : gate.decision === "BLOCKED"
+              ? "Blocked"
+              : execution?.by === "seller"
+                ? "Needed your approval, and you gave it"
+                : run.status === "rejected"
+                  ? "Needed your approval, and you said no"
+                  : "Needs your approval"}
         </p>
         <ul className="mt-1 list-disc pl-5 text-[0.95rem]">
           {gate.reasons.map((r) => (

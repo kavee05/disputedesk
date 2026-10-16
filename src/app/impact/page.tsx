@@ -11,7 +11,8 @@ export default function ImpactPage() {
   const cases = listCases().map((c) => ({ c, s: statusOf(c) }));
   const runs = listRuns();
   const submitted = runs.filter((r) => r.status === "submitted");
-  const handledIds = new Set([...submitted.map((r) => r.caseId), ...cases.filter(({ s }) => !isOpen(s)).map(({ c }) => c.id)]);
+  // "Handled" means the agent actually sent a step to PayPal for the case.
+  const handledIds = new Set(submitted.map((r) => r.caseId));
   const handled = handledIds.size;
   const auto = submitted.filter((r) => r.data.execution?.by === "policy").length;
   const approved = submitted.length - auto;
@@ -30,16 +31,16 @@ export default function ImpactPage() {
     <>
       <PageHeader
         title="Impact"
-        intro="Money only counts as defended when PayPal itself reports the case resolved in your favour. Refunds only count once PayPal reports the refund as completed."
+        intro="Money only counts as defended when PayPal itself reports the case resolved in your favour. Refunds only count once PayPal reports the refund as completed. Totals cover every synced case."
       />
 
-      <section className="grid gap-px overflow-hidden rounded-lg border border-rule bg-rule sm:grid-cols-2 lg:grid-cols-4">
+      <section className="grid gap-px overflow-hidden rounded-lg border border-rule bg-rule sm:grid-cols-2 xl:grid-cols-4">
         <Stat label="Money defended" value={money(defendedSandbox + defendedSim)} tone="text-pandan">
           {defendedSandbox > 0 && <span className="block">{money(defendedSandbox)} confirmed by PayPal Sandbox</span>}
           {defendedSim > 0 && <span className="block">{money(defendedSim)} in simulated cases</span>}
           {defendedSandbox + defendedSim === 0 && <span className="block">No case resolved for you yet</span>}
         </Stat>
-        <Stat label="Disputes handled" value={String(handled)}>
+        <Stat label="Handled by the agent" value={String(handled)}>
           {auto} sent automatically, {approved} after your approval
         </Stat>
         <Stat label="Hours saved (estimate)" value={hoursSaved.toFixed(1)}>

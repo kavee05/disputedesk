@@ -27,7 +27,7 @@ export function Nav({ aiLabel, readOnly }: { aiLabel: string; readOnly: boolean 
           </Link>
         )}
       </div>
-      <nav aria-label="Main" className="mt-3 flex gap-1 overflow-x-auto px-3 pb-3 md:mt-8 md:flex-col md:overflow-visible md:px-3">
+      <nav aria-label="Main" className="mt-3 flex flex-wrap gap-1 px-3 pb-3 md:mt-8 md:flex-col md:flex-nowrap md:px-3">
         {LINKS.map((l) => (
           <Link
             key={l.href}
