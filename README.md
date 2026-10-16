@@ -104,7 +104,7 @@ The case status the seller sees is computed from PayPal's data alone. "Won" need
 
 - **Google Gemini** (`gemini-3.5-flash-lite`, falling back to `gemini-3.8-flash`) runs inside the product as the Case Analyst and Evidence Writer. It returns JSON constrained to a schema, which the app validates with zod before using. It never sees API secrets or the buyer's name, email, phone or address, and it cannot choose a PayPal action: the action comes from code and the live PayPal links.
 - **Anthropic Claude** can be swapped in through the same provider interface (`AI_PROVIDER=anthropic`). It was not used for the demo.
-- **Claude Code** (Anthropic's coding agent) helped build the project: it ran the sandbox feasibility probes, wrote most of the code and tests under the developer's direction, and drafted the documentation, which the developer reviewed.
+- **Claude Code (Anthropic):** Used as a development assistant throughout the project to run PayPal Sandbox feasibility probes, debug the application, identify and fix code errors, investigate API integration issues, and improve edge-case handling. It also assisted with writing and refining automated tests, reviewing the UI across different screen sizes, and drafting technical documentation. Development decisions and implementation changes were directed and reviewed by me, with testing used to validate the resulting behaviour.
 - **PayPal Agent Toolkit** (`@paypal/agent-toolkit`) was evaluated in the feasibility phase. Its dispute tools cover list, get and accept claim only, so the app calls the Disputes REST API directly for evidence and messages. See [FEASIBILITY.md](FEASIBILITY.md).
 
 ## Responsible design
