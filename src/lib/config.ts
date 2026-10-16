@@ -60,8 +60,10 @@ export const config = {
     provider: resolveProvider(),
     gemini: {
       apiKey: env.GEMINI_API_KEY?.trim() ?? "",
-      model: env.GEMINI_MODEL?.trim() || "gemini-3.8-flash",
-      fallbackModel: env.GEMINI_FALLBACK_MODEL?.trim() || "gemini-3.5-flash-lite",
+      // Flash-Lite answers in 1 to 4 seconds and has a much larger free-tier
+      // quota than 3.8 Flash, which ran out of daily quota during testing.
+      model: env.GEMINI_MODEL?.trim() || "gemini-3.5-flash-lite",
+      fallbackModel: env.GEMINI_FALLBACK_MODEL?.trim() || "gemini-3.8-flash",
       // "low" keeps answers around 5 seconds. Set to "" to use the model default.
       thinkingLevel: env.GEMINI_THINKING_LEVEL === undefined ? "low" : env.GEMINI_THINKING_LEVEL.trim(),
     },

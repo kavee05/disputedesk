@@ -42,25 +42,31 @@ class GeminiProvider implements LlmProvider {
 
   async generateJson<T>(req: JsonRequest<T>): Promise<JsonResult<T>> {
     const models = [config.ai.gemini.model, config.ai.gemini.fallbackModel].filter((m, i, a) => m && a.indexOf(m) === i);
-    // A seller should not wait minutes: hard budget across all retries.
-    const deadline = Date.now() + 75_000;
+    // A seller should not wait minutes: hard budget across all retries, and
+    // the primary model may not use it all, so the fallback still gets a turn.
+    const deadline = Date.now() + 50_000;
     let lastErr: unknown;
-    for (const model of models) {
+    for (const [index, model] of models.entries()) {
+      const isLast = index === models.length - 1;
+      const modelDeadline = isLast ? deadline : Math.min(deadline - 15_000, Date.now() + 25_000);
       for (let attempt = 1; attempt <= 2; attempt++) {
-        const left = deadline - Date.now();
-        if (left < 5_000) throw new LlmError(`Gemini timeout: no answer within the time budget (${lastErr instanceof Error ? lastErr.message : "busy"})`);
+        const left = modelDeadline - Date.now();
+        if (left < 3_000) break;
         try {
-          const text = await this.call(model, req, Math.min(35_000, left));
+          const text = await this.call(model, req, left);
           return { data: parseOrThrow(req.schema, text), model };
         } catch (err) {
           lastErr = err;
-          const busy = err instanceof LlmError && /\b(429|500|503|timeout)\b/i.test(err.message);
-          if (!busy && !(err instanceof LlmError && /validation|valid JSON/.test(err.message))) break;
-          await new Promise((r) => setTimeout(r, 800 * attempt));
+          const msg = err instanceof LlmError ? err.message : "";
+          // Quota used up or model gone: retrying the same model cannot help.
+          if (/\b(429|404)\b/.test(msg)) break;
+          const retryable = /\b(500|503)\b|validation|valid JSON/i.test(msg);
+          if (!retryable) break;
+          await new Promise((r) => setTimeout(r, 600 * attempt));
         }
       }
     }
-    throw lastErr instanceof Error ? lastErr : new LlmError(String(lastErr));
+    throw new LlmError(`Gemini gave no usable answer within the time budget (${lastErr instanceof Error ? lastErr.message : "busy"})`);
   }
 
   private async call(model: string, req: JsonRequest<unknown>, timeoutMs: number, thinking = true): Promise<string> {

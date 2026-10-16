@@ -53,6 +53,8 @@ export async function runPipeline(caseId: string, opts: { override?: Recommendat
       const r = await runAnalyst(ai, c, bundle);
       analyst = r.data;
       provider.model = r.model;
+      // Name the model that actually answered, which may be the fallback.
+      provider.label = ai.name === "gemini" ? `Google Gemini (${r.model})` : `Anthropic Claude (${r.model})`;
     } catch (err) {
       useAi = false;
       Object.assign(provider, { label: `Offline rules (${ai.name === "gemini" ? "Gemini" : "Claude"} unavailable)`, model: "rules-v1", offline: true });

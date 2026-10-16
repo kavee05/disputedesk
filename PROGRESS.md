@@ -14,7 +14,7 @@ Deadline: Nov 12, 2026, 12:00pm PST.
 - Case model, sync, evidence collector with personal data scrubbing, demo seed of eight cases.
 
 **Phase 2: agent pipeline**
-- Case Analyst and Evidence Writer on Gemini (`gemini-3.8-flash`, thinking level low, about 15 seconds per step), Claude optional. Schema-constrained JSON, validated with zod.
+- Case Analyst and Evidence Writer on Gemini (`gemini-3.5-flash-lite` with `gemini-3.8-flash` as fallback, thinking level low, a few seconds per step), Claude optional. Schema-constrained JSON, validated with zod.
 - Expected value in code. Citation checks. Deterministic Policy Gate. Allowlisted, link-gated Executor that stores PayPal responses verbatim.
 - Time budget with a labelled offline fallback when the AI is slow or down.
 
