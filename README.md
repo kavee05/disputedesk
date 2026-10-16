@@ -6,7 +6,7 @@ DisputeDesk is an AI agent that defends small online sellers against PayPal disp
 
 Everything runs on the **PayPal Sandbox**. No real money moves.
 
-- Live demo: `HOSTED_URL_GOES_HERE` (demo mode, simulated PayPal, real AI)
+- Live demo: https://disputedesk-zcru.onrender.com (demo mode, simulated PayPal, real AI)
 - Feasibility report from the real sandbox: [FEASIBILITY.md](FEASIBILITY.md)
 - License: [MIT](LICENSE)
 

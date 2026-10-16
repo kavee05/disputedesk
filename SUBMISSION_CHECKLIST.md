@@ -36,7 +36,7 @@ Legend: **Done** means it is in the repo. **You** means only you can do it.
 
 ## Links to fill in after you have them
 
-- [ ] Replace `HOSTED_URL_GOES_HERE` in `README.md` and `DEVPOST.md` with your Render URL
+- [x] Hosted URL filled in: https://disputedesk-zcru.onrender.com
 - [x] GitHub URL filled in: https://github.com/kavee05/disputedesk
 
 ## Steps only you can do
