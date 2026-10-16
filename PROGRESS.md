@@ -12,11 +12,19 @@ Deadline: Nov 12, 2026, 12:00pm PST.
   - `toolkit.ts` calls the PayPal Agent Toolkit dispute tools directly, without an LLM
 - Desk research: the Agent Toolkit (v1.11.0) has only `list_disputes`, `get_dispute`, `accept_dispute_claim` for disputes, so evidence, offers and messages must go through REST.
 
+- First sandbox app (non-US seller) left every capture PENDING with `RECEIVING_PREFERENCE_MANDATES_MANUAL_ACTION`. Switched to a new US Business + US Personal pair and a new Merchant app (`APP-3MW60764R97604927`, has dispute, tracking, invoicing and transaction search scopes).
+- 5 goods-and-services orders captured on the US app, all `COMPLETED` per `GET /v2/payments/captures/{id}`. Tracking added to D1 and D2 and read back via both `/v2/checkout/orders/{id}` and `/v1/shipping/trackers`.
+
+| Case | Amount | Order | Capture (transaction) | Tracking |
+|---|---|---|---|---|
+| D1 | $48.00 | 4P95273424320082B | 62U865259J177000P | USPS 9400111899223197428490 |
+| D2 | $32.00 | 0RW29247BH657370J | 92777357PE885964Y | USPS 9400111899223197428506 |
+| D3 | $15.00 | 4JW9086092499472F | 5AC91803V9139624P | none |
+| D4 | $27.00 | 8GW19372YB480913V | 4E760678YD342835N | none |
+| C1 | $20.00 | 50H90340LE833200X | 98X219887P2678732 | none, reserved for chargeback probe |
+
 ## Next
-1. Kavee adds `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `PAYPAL_ENV=sandbox` to `.env.local`.
-2. Run `probe:auth`, then `probe:orders -- create`. Kavee approves the 5 links as the sandbox buyer.
-3. Run `probe:orders -- capture` and `-- status`, then `probe:chargeback`.
-4. Kavee opens disputes D1 to D4 in the sandbox Resolution Center.
+4. Kavee opens disputes D1 to D4 in the sandbox Resolution Center. Run `probe:chargeback` on C1.
 5. Run `probe:disputes -- map`, then the link-gated steps per case, then `probe:toolkit`.
 6. Write FEASIBILITY.md and stop for review.
 
