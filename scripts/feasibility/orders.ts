@@ -122,6 +122,23 @@ if (cmd === "create") {
       console.log(`      /v1/shipping/trackers: ${t.status} count=${t.body?.trackers?.length ?? 0}`);
     }
   }
+} else if (cmd === "captures") {
+  // Order status and capture status are separate: an order can be COMPLETED
+  // while its capture is still PENDING (money held, not yet with the seller).
+  for (const [key, c] of Object.entries(state.cases) as [CaseKey, CaseState][]) {
+    if (!c.orderId) continue;
+    const order = await api(`order-get-${key}`, "GET", `/v2/checkout/orders/${c.orderId}`);
+    const embedded = order.body?.purchase_units?.[0]?.payments?.captures?.[0];
+    console.log(`  ${key} $${c.amount}  order ${c.orderId}: ${order.body?.status}`);
+    console.log(`      order view of capture: ${embedded?.status} ${JSON.stringify(embedded?.status_details ?? {})}`);
+    if (!c.captureId) continue;
+    const cap = await api(`capture-get-${key}`, "GET", `/v2/payments/captures/${c.captureId}`);
+    const b = cap.body;
+    console.log(`      capture ${c.captureId}: ${b?.status} ${JSON.stringify(b?.status_details ?? {})}`);
+    console.log(
+      `      final_capture=${b?.final_capture} seller_protection=${b?.seller_protection?.status ?? "-"} net=${b?.seller_receivable_breakdown?.net_amount?.value ?? "-"} fee=${b?.seller_receivable_breakdown?.paypal_fee?.value ?? "-"} updated=${b?.update_time}`,
+    );
+  }
 } else {
-  console.log("Usage: npm run probe:orders -- create | capture | status");
+  console.log("Usage: npm run probe:orders -- create | capture | status | captures");
 }
