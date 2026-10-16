@@ -28,6 +28,7 @@ Legend: **Done** means it is in the repo. **You** means only you can do it.
 | Built with | Done | The list in `DEVPOST.md` |
 | "Try it out" links | You | Your GitHub URL and your Render URL |
 | Video demo link | You | Your YouTube or Vimeo URL |
+| Optional file upload | Done | `docs/DisputeDesk-Judge-Guide.pdf`, a two page judge guide (source in `docs/judge-guide.html`) |
 | Image gallery | You | 3 to 5 screenshots: inbox, case page with the four steps and scale, approval, Impact page, audit log. Use the sandbox banner in shots |
 | Thumbnail | You | One clean screenshot of the case page, or a simple title card |
 | Special prize opt-ins | You | Tick Best Use of PayPal + AI, Best Use of Agentic Commerce, Best Demo Delivery if the form offers them |
