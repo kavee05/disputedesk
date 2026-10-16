@@ -67,7 +67,7 @@ nextjs, typescript, react, tailwindcss, sqlite, drizzle, zod, paypal-disputes-ap
 ## AI tools used
 
 - **Google Gemini** inside the product, for the Case Analyst and Evidence Writer steps.
-- **Claude Code (Anthropic):** Used as a development assistant throughout the project to run PayPal Sandbox feasibility probes, debug the application, identify and fix code errors, investigate API integration issues, and improve edge-case handling. It also assisted with writing and refining automated tests, reviewing the UI across different screen sizes, and drafting technical documentation. Development decisions and implementation changes were directed and reviewed by me, with testing used to validate the resulting behaviour.
+- **Claude Code (Anthropic):** Used as a development assistant throughout the project to run PayPal Sandbox feasibility probes, write, debug and test the application, identify and fix code errors, investigate API integration issues, and improve edge-case handling. It also assisted with writing and refining automated tests, reviewing the UI across different screen sizes, and drafting technical documentation. Development decisions and implementation changes were directed and reviewed by me, with testing used to validate the resulting behaviour.
 - **PayPal Agent Toolkit** was evaluated. Its dispute tools only cover list, get and accept claim, so DisputeDesk calls the Disputes REST API directly for evidence and messages.
 
 ## Try it
