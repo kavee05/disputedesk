@@ -18,8 +18,16 @@ export class ExecutorRefusal extends Error {}
 
 const MAX_TEXT = 2000;
 
+// Internal evidence ids like "(E4)" or "[E1, E3]" mean nothing to PayPal.
+export function stripCitations(text: string): string {
+  return text
+    .replace(/\s*[([]\s*E\d+(?:\s*[,;&]\s*E\d+)*\s*[)\]]/g, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+}
+
 export function buildPayload(action: AllowedAction, text: string, amount: { value: number; currency: string }): unknown {
-  const clean = scrubPersonalData(text).slice(0, MAX_TEXT);
+  const clean = scrubPersonalData(stripCitations(text)).slice(0, MAX_TEXT);
   switch (action) {
     case "provide_evidence":
       // The sandbox only accepts OTHER (PROOF_OF_FULFILLMENT is rejected with

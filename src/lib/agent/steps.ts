@@ -82,7 +82,7 @@ export async function runWriter(ai: LlmProvider, c: Case, bundle: EvidenceBundle
     schema: WriterOutput,
     system: `${SHARED_RULES}
 Your job: draft text the seller will submit. ${task}
-Keep it under 1500 characters. Do not include the buyer's name, email, phone or address. List every factual claim in "statements" with the evidence ids that back it. If a claim has no evidence, leave it out of the response.`,
+Keep it under 1500 characters. Do not include the buyer's name, email, phone or address. Do not put evidence ids (E1, E2) in response_text, because PayPal staff read it. Put them only in "statements". List every factual claim in "statements" with the evidence ids that back it. If a claim has no evidence, leave it out of the response.`,
     user: `${renderEvidence(c, bundle)}\n\nThe analyst recommended ${analysis.recommendation} because: ${analysis.summary}\n\nWrite the draft.`,
   });
 }

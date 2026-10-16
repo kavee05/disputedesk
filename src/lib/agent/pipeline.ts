@@ -6,7 +6,7 @@ import { refreshCase } from "../cases/sync";
 import { collectEvidence, type EvidenceBundle } from "../evidence/collect";
 import type { AllowedAction } from "../paypal/types";
 import { expectedValue } from "./ev";
-import { executeRun } from "./executor";
+import { executeRun, stripCitations } from "./executor";
 import { llm } from "./llm";
 import { offlineAnalyst, offlineWriter } from "./offline";
 import { getPolicy, policyGate, type Recommendation } from "./policy";
@@ -71,6 +71,7 @@ export async function runPipeline(caseId: string, opts: { override?: Recommendat
   let verification = { unknownIds: [] as string[], unsupported: [] as string[] };
   if (plan.purpose) {
     writer = ai ? (await runWriter(ai, c, bundle, analyst, plan.purpose)).data : offlineWriter(c, bundle, plan.purpose);
+    writer = { ...writer, response_text: stripCitations(writer.response_text) };
     verification = verifyCitations(writer, bundle);
     audit("agent_decision", `Evidence Writer drafted a ${plan.purpose.replace("_", " ")} (${writer.statements.length} cited statements)`, { writer, verification }, c.id);
   }

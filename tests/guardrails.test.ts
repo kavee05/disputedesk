@@ -51,6 +51,13 @@ describe("executor allowlist", () => {
     expect(() => buildPayload("escalate" as never, "x", { value: 1, currency: "USD" })).toThrow(ExecutorRefusal);
   });
 
+  it("removes internal evidence ids before text goes to PayPal", () => {
+    const p = buildPayload("provide_evidence", "Shipped with tracking (E4). Delivered [E1, E3]. Done (E2,E5).", { value: 1, currency: "USD" }) as {
+      evidences: { notes: string }[];
+    };
+    expect(p.evidences[0].notes).toBe("Shipped with tracking. Delivered. Done.");
+  });
+
   it("strips personal data and caps length in anything sent to PayPal", () => {
     const p = buildPayload("send_message", `Contact a.b@example.com ${"x".repeat(3000)}`, { value: 1, currency: "USD" }) as { message: string };
     expect(p.message).not.toContain("a.b@example.com");
