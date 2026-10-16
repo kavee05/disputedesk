@@ -4,9 +4,9 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { refreshCaseAction } from "@/app/actions";
 
-// While PayPal is applying a step, re-read the dispute every few seconds so
-// the page shows PayPal's real state as soon as it settles.
-export function AutoRefresh({ caseId, everyMs = 6000 }: { caseId: string; everyMs?: number }) {
+// While PayPal is applying a step or reviewing a case, re-read the dispute on
+// a timer so the page shows PayPal's real state as soon as it changes.
+export function AutoRefresh({ caseId, everyMs = 6000, message }: { caseId: string; everyMs?: number; message: string }) {
   const router = useRouter();
   useEffect(() => {
     const id = setInterval(async () => {
@@ -17,7 +17,7 @@ export function AutoRefresh({ caseId, everyMs = 6000 }: { caseId: string; everyM
   }, [caseId, everyMs, router]);
   return (
     <p className="text-sm text-sky" role="status">
-      Checking PayPal for the result every few seconds.
+      {message}
     </p>
   );
 }

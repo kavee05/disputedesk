@@ -90,7 +90,8 @@ export async function runPipeline(caseId: string, opts: { override?: Recommendat
     writer ??= offlineWriter(c, bundle, plan.purpose);
     writer = { ...writer, response_text: stripCitations(writer.response_text) };
     verification = verifyCitations(writer, bundle);
-    audit("agent_decision", `Evidence Writer drafted a ${plan.purpose.replace("_", " ")} (${writer.statements.length} cited statements)`, { writer, verification }, c.id);
+    const noun = { evidence: "an evidence statement", message: "a message to the buyer", refund_note: "a refund note" }[plan.purpose];
+    audit("agent_decision", `Evidence Writer drafted ${noun} (${writer.statements.length} cited statements)`, { writer, verification }, c.id);
   }
 
   // Step 3: Policy Gate (deterministic)

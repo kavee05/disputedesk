@@ -2,7 +2,7 @@ import { audit } from "../audit";
 import { now } from "../db";
 import { refreshCase } from "../cases/sync";
 import { scrubPersonalData } from "../evidence/redact";
-import { paypal, PayPalError } from "../paypal";
+import { paypal, paypalName, PayPalError } from "../paypal";
 import { AGENT_ACTIONS, linkNames, type AllowedAction } from "../paypal/types";
 import { getRun, saveRun, type AgentRun } from "./runs";
 
@@ -72,19 +72,19 @@ export async function executeRun(runId: string, by: "policy" | "seller", editedT
   const text = editedText ?? run.draftText;
   const edited = editedText !== undefined && editedText !== run.draftText;
   const payload = buildPayload(action, text, { value: Number(dispute.dispute_amount.value), currency: dispute.dispute_amount.currency_code });
-  audit("paypal_request", `Sending ${action} to PayPal (${by === "policy" ? "automatic, within policy" : "approved by seller"})`, { runId, action, payload }, run.caseId);
+  audit("paypal_request", `Sending ${action} to ${paypalName()} (${by === "policy" ? "automatic, within policy" : "approved by seller"})`, { runId, action, payload }, run.caseId);
 
   try {
     const res = await paypal().act(run.caseId, action, payload, run.caseId);
     run.status = "submitted";
     run.draftText = text;
     run.data.execution = { at: now(), by, action, edited, response: { status: res.status, body: res.body, debugId: res.debugId } };
-    audit("paypal_response", `PayPal accepted ${action} (HTTP ${res.status})`, { runId, response: res }, run.caseId);
+    audit("paypal_response", `${paypalName()} accepted ${action} (HTTP ${res.status})`, { runId, response: res }, run.caseId);
   } catch (err) {
     const e = err instanceof PayPalError ? err : new PayPalError((err as Error).message, 0, null);
     run.status = "failed";
     run.data.execution = { at: now(), by, action, edited, error: { message: e.message, status: e.status, body: e.body, debugId: e.debugId } };
-    audit("paypal_response", `PayPal rejected ${action}: ${e.message}`, { runId, status: e.status, body: e.body, debugId: e.debugId }, run.caseId);
+    audit("paypal_response", `${paypalName()} rejected ${action}: ${e.message}`, { runId, status: e.status, body: e.body, debugId: e.debugId }, run.caseId);
   }
   saveRun(run);
   await refreshCase(run.caseId).catch(() => undefined);
@@ -110,11 +110,16 @@ export async function sandboxAdjudicate(caseId: string, outcome: "SELLER_FAVOR" 
   }
   try {
     const res = await paypal().act(caseId, "adjudicate", { adjudication_outcome: outcome }, caseId);
-    audit("paypal_response", `Sandbox adjudication ${outcome} accepted (HTTP ${res.status})`, { sandboxAdjudication: true, outcome, response: res }, caseId);
+    audit("paypal_response", `${decisionName()} ${outcome} accepted (HTTP ${res.status})`, { sandboxAdjudication: true, outcome, response: res }, caseId);
   } catch (err) {
     const e = err as PayPalError;
-    audit("paypal_response", `Sandbox adjudication rejected: ${e.message}`, { sandboxAdjudication: true, outcome, status: e.status, body: e.body }, caseId);
+    audit("paypal_response", `${decisionName()} rejected: ${e.message}`, { sandboxAdjudication: true, outcome, status: e.status, body: e.body }, caseId);
     throw err;
   }
   return refreshCase(caseId);
+}
+
+// "Sandbox adjudication" only ever describes the real sandbox tool.
+function decisionName() {
+  return paypal().mode === "sandbox" ? "Sandbox adjudication" : "Simulated PayPal decision";
 }

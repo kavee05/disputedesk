@@ -11,5 +11,11 @@ export function paypal(): PayPalGateway {
   return gateway;
 }
 
+// How to name the other side in any text a person reads. Demo mode never
+// claims that real PayPal (sandbox or otherwise) did something.
+export function paypalName(): "PayPal" | "Simulated PayPal" {
+  return paypal().mode === "sandbox" ? "PayPal" : "Simulated PayPal";
+}
+
 export * from "./types";
 export { PayPalError } from "./http";

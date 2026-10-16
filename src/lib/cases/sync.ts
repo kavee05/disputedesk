@@ -1,4 +1,4 @@
-import { and, eq, like } from "drizzle-orm";
+import { and, eq, like, or } from "drizzle-orm";
 import { audit } from "../audit";
 import { db, now } from "../db";
 import { auditLog } from "../db/schema";
@@ -12,7 +12,13 @@ function wasSandboxAdjudicated(caseId: string): boolean {
   return !!db()
     .select({ id: auditLog.id })
     .from(auditLog)
-    .where(and(eq(auditLog.caseId, caseId), eq(auditLog.kind, "paypal_response"), like(auditLog.summary, "Sandbox adjudication % accepted%")))
+    .where(
+      and(
+        eq(auditLog.caseId, caseId),
+        eq(auditLog.kind, "paypal_response"),
+        or(like(auditLog.summary, "Sandbox adjudication % accepted%"), like(auditLog.summary, "Simulated PayPal decision % accepted%")),
+      ),
+    )
     .get();
 }
 

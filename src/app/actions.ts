@@ -6,6 +6,7 @@ import { audit } from "@/lib/audit";
 import { config } from "@/lib/config";
 import { requireWrite, takeAgentSlot, PASSCODE_COOKIE } from "@/lib/app";
 import { refreshCase, syncAllCases } from "@/lib/cases/sync";
+import { paypalName } from "@/lib/paypal";
 import { executeRun, rejectRun, sandboxAdjudicate } from "@/lib/agent/executor";
 import { runPipeline } from "@/lib/agent/pipeline";
 import { savePolicy, SellerPolicy, type Recommendation } from "@/lib/agent/policy";
@@ -44,9 +45,9 @@ export async function runAgentAction(caseId: string, override?: Recommendation):
     revalidatePath("/", "layout");
     const msg =
       run.status === "submitted"
-        ? "The agent acted within your policy. PayPal accepted the step."
+        ? `The agent acted within your policy. ${paypalName()} accepted the step.`
         : run.status === "failed"
-          ? "PayPal rejected the step. See the details below."
+          ? `${paypalName()} rejected the step. See the details below.`
           : run.status === "awaiting_approval"
             ? "The agent drafted a response and is waiting for your approval."
             : run.status === "needs_decision"
@@ -64,9 +65,9 @@ export async function approveAction(runId: string, caseId: string, text: string)
     audit("seller_action", "Seller approved the agent's proposal", { runId, edited: true }, caseId);
     const run = await executeRun(runId, "seller", text);
     revalidatePath("/", "layout");
-    if (run.status === "submitted") return { ok: true, message: "Sent. PayPal accepted the step and is processing it." };
+    if (run.status === "submitted") return { ok: true, message: `Sent. ${paypalName()} accepted the step and is processing it.` };
     if (run.status === "blocked") return { ok: false, message: run.data.gate.reasons[0] ?? "PayPal no longer offers this action." };
-    return { ok: false, message: run.data.execution?.error?.message ?? "PayPal rejected the step." };
+    return { ok: false, message: run.data.execution?.error?.message ?? `${paypalName()} rejected the step.` };
   } catch (err) {
     return fail(err);
   }
@@ -88,7 +89,7 @@ export async function adjudicateAction(caseId: string, outcome: "SELLER_FAVOR" |
     await requireWrite();
     await sandboxAdjudicate(caseId, outcome);
     revalidatePath("/", "layout");
-    return { ok: true, message: "PayPal accepted the request. The decision usually shows within a few minutes." };
+    return { ok: true, message: `${paypalName()} accepted the request. The decision usually shows within a few minutes.` };
   } catch (err) {
     return fail(err);
   }

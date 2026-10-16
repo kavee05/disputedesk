@@ -59,6 +59,20 @@ describe("status comes only from PayPal", () => {
     expect(done.defended).toBe(0);
   });
 
+  it("simulated cases never say real PayPal did something", () => {
+    const sim = { ...open, source: "simulated" as const };
+    for (const c of [
+      sim,
+      { ...sim, paypalStatus: "UNDER_REVIEW", links: ["self"] },
+      { ...sim, paypalStatus: "UNDER_REVIEW", links: ["self", "provide_supporting_info"] },
+      { ...sim, paypalStatus: "RESOLVED", outcome: { code: "RESOLVED_SELLER_FAVOUR" } },
+    ]) {
+      const detail = deriveStatus(c, []).detail;
+      expect(detail).toMatch(/Simulated PayPal/);
+    }
+    expect(deriveStatus(open, []).detail).not.toMatch(/Simulated/);
+  });
+
   it("a buyer-favour outcome without a confirmed refund is not shown as refunded", () => {
     const s = deriveStatus({ ...open, paypalStatus: "RESOLVED", outcome: { code: "RESOLVED_BUYER_FAVOUR" }, refundIds: ["R1"] }, []);
     expect(s.key).toBe("lost");

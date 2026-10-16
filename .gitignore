@@ -28,3 +28,6 @@ next-env.d.ts
 
 # Playwright review screenshots
 .playwright-mcp/
+
+# Devpost gallery screenshots (upload by hand, not part of the app)
+devpost-images/

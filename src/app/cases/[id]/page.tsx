@@ -94,9 +94,19 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
             )}
           </div>
         </div>
-        {status.key === "processing" && (
+        {(status.key === "processing" || status.key === "review") && (
           <div className="mt-4 border-t border-rule pt-3">
-            <AutoRefresh caseId={c.id} />
+            <AutoRefresh
+              caseId={c.id}
+              everyMs={status.key === "processing" ? 6000 : c.source === "sandbox" ? 60000 : 8000}
+              message={
+                status.key === "processing"
+                  ? `Checking ${c.source === "sandbox" ? "PayPal" : "Simulated PayPal"} for the result every few seconds.`
+                  : c.source === "sandbox"
+                    ? "Checking PayPal once a minute. In the sandbox a decision can take 20 to 30 minutes."
+                    : "Checking Simulated PayPal for a decision every few seconds."
+              }
+            />
           </div>
         )}
       </Panel>
@@ -139,13 +149,13 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
               </div>
             </Panel>
           ) : (
-            <AgentSteps run={run} caseId={c.id} currency={c.currency} evidence={evidence?.items ?? []} />
+            <AgentSteps run={run} caseId={c.id} currency={c.currency} evidence={evidence?.items ?? []} pp={c.source === "sandbox" ? "PayPal" : "Simulated PayPal"} />
           )}
         </section>
 
         <aside className="flex min-w-0 flex-col gap-5" aria-label="PayPal record">
           <Panel>
-            <PanelHeader title="PayPal record" description={`Last read ${dateTime(c.syncedAt)}`}>
+            <PanelHeader title={c.source === "sandbox" ? "PayPal record" : "Simulated PayPal record"} description={`Last read ${dateTime(c.syncedAt)}`}>
               <ActionButton action={refreshCaseAction.bind(null, c.id)} variant="quiet" pendingLabel="Refreshing" icon={<RefreshCw className="h-3.5 w-3.5" aria-hidden />}>
                 Refresh
               </ActionButton>
@@ -175,7 +185,7 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
                 </div>
               ))}
               <dt className="text-muted">Allowed now</dt>
-              <dd>{c.links.filter((l) => l !== "self").map((l) => l.replace(/_/g, " ")).join(", ") || "Nothing while PayPal is processing"}</dd>
+              <dd>{c.links.filter((l) => l !== "self").map((l) => l.replace(/_/g, " ")).join(", ") || (isOpen(status) ? "Nothing while PayPal is processing" : "Nothing, the case is closed")}</dd>
             </dl>
           </Panel>
 
@@ -264,7 +274,7 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
 
           {responses.length > 0 && (
             <Panel>
-              <PanelHeader title="PayPal responses" />
+              <PanelHeader title={c.source === "sandbox" ? "PayPal responses" : "Simulated PayPal responses"} />
               <ul className="flex flex-col gap-3 px-5 py-4 text-sm">
                 {responses.map((r) => (
                   <li key={r.id}>
@@ -330,7 +340,7 @@ function Cite({ ids, items }: { ids: string[]; items: EvidenceItem[] }) {
   );
 }
 
-function AgentSteps({ run, caseId, currency, evidence }: { run: AgentRun; caseId: string; currency: string; evidence: EvidenceItem[] }) {
+function AgentSteps({ run, caseId, currency, evidence, pp }: { run: AgentRun; caseId: string; currency: string; evidence: EvidenceItem[]; pp: string }) {
   const { analyst, ev, writer, verification, plan, gate, provider, execution } = run.data;
   const rec = analyst.recommendation;
   return (
@@ -466,17 +476,17 @@ function AgentSteps({ run, caseId, currency, evidence }: { run: AgentRun; caseId
             </p>
             {execution.response && (
               <p className="mt-1 text-pandan">
-                PayPal answered HTTP {execution.response.status}: the step was accepted. The case status above shows PayPal&apos;s current state, not a guess.
+                {pp} answered HTTP {execution.response.status}: the step was accepted. The case status above shows {pp}&apos;s current state, not a guess.
               </p>
             )}
             {execution.error && (
               <p className="mt-1 text-chili">
-                PayPal answered HTTP {execution.error.status}: {execution.error.message}
+                {pp} answered HTTP {execution.error.status}: {execution.error.message}
                 {execution.error.debugId ? ` (debug id ${execution.error.debugId})` : ""}.
               </p>
             )}
             <details className="mt-2">
-              <summary className="cursor-pointer font-medium text-ink-soft">PayPal response, exactly as received</summary>
+              <summary className="cursor-pointer font-medium text-ink-soft">{pp} response, exactly as received</summary>
               <pre className="mt-2 max-h-64 overflow-auto rounded-lg bg-paper p-3 text-xs">{JSON.stringify(execution.response ?? execution.error, null, 2)}</pre>
             </details>
           </div>
