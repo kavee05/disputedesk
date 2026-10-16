@@ -1,0 +1,22 @@
+node_modules/
+.next/
+out/
+dist/
+coverage/
+
+# Secrets: never commit. Only the example file is tracked.
+.env
+.env.*
+!.env.example
+
+# Local probe state and raw sandbox responses (may contain sandbox buyer details)
+scripts/feasibility/.state.json
+scripts/feasibility/results/
+
+*.db
+*.db-journal
+*.log
+.DS_Store
+
+# Local Claude Code settings
+.claude/settings.local.json

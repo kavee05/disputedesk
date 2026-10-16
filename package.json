@@ -1,0 +1,24 @@
+{
+  "name": "disputedesk",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An AI agent that defends small sellers against PayPal disputes (PayPal Sandbox only).",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "probe:auth": "tsx scripts/feasibility/auth.ts",
+    "probe:orders": "tsx scripts/feasibility/orders.ts",
+    "probe:disputes": "tsx scripts/feasibility/disputes.ts",
+    "probe:chargeback": "tsx scripts/feasibility/chargeback.ts",
+    "probe:toolkit": "tsx scripts/feasibility/toolkit.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "dotenv": "^18.0.8",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "@paypal/agent-toolkit": "^1.11.0"
+  }
+}
