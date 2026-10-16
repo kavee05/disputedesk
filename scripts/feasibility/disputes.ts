@@ -66,6 +66,35 @@ const STEPS: Record<string, Step> = {
       ],
     }),
   },
+  // Sandbox INTERNAL disputes reject PROOF_OF_FULFILLMENT with
+  // EVIDENCE_TYPE_IS_NOT_ALLOWED, so tracking goes into OTHER notes instead.
+  "provide-evidence-other-tracking": {
+    link: "provide_evidence",
+    path: "provide-evidence",
+    multipart: true,
+    body: ({ tracking }) => ({
+      evidences: [
+        {
+          evidence_type: "OTHER",
+          notes: `Proof of fulfillment: shipped via ${tracking?.carrier} with tracking number ${tracking?.number}. The tracking record is attached to this PayPal transaction and shows the parcel as shipped to the buyer's address on file.`,
+        },
+      ],
+    }),
+  },
+  "provide-evidence-other-shipped": {
+    link: "provide_evidence",
+    path: "provide-evidence",
+    multipart: true,
+    body: () => ({
+      evidences: [
+        {
+          evidence_type: "OTHER",
+          notes:
+            "The order was handed to the courier, but no tracking number was recorded. We have no delivery confirmation to share.",
+        },
+      ],
+    }),
+  },
   escalate: {
     link: "escalate",
     path: "escalate",
