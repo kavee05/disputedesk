@@ -6,7 +6,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-config({ path: ".env.local", quiet: true });
+// Same precedence as Next.js: .env.local wins over .env. Both are gitignored.
+config({ path: [".env.local", ".env"], quiet: true });
 
 const here = dirname(fileURLToPath(import.meta.url));
 const RESULTS_DIR = join(here, "results");
