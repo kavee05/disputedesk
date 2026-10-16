@@ -23,12 +23,12 @@ export function Panel({ children, className = "", as: Tag = "section" }: { child
 
 export function PanelHeader({ title, description, children }: { title: string; description?: React.ReactNode; children?: React.ReactNode }) {
   return (
-    <div className="flex flex-wrap items-start justify-between gap-3 border-b border-rule px-5 py-4">
-      <div className="min-w-0">
+    <div className="flex items-start justify-between gap-3 border-b border-rule px-5 py-4">
+      <div className="min-w-0 flex-1">
         <h2 className="text-[1.05rem] font-semibold">{title}</h2>
         {description && <p className="mt-0.5 text-sm text-muted">{description}</p>}
       </div>
-      {children}
+      {children && <div className="shrink-0">{children}</div>}
     </div>
   );
 }

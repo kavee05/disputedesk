@@ -22,6 +22,7 @@ import { isOpen } from "@/lib/cases/status";
 import { getEvidence, type EvidenceItem, type EvidenceKind } from "@/lib/evidence/collect";
 import { latestRun, type AgentRun } from "@/lib/agent/runs";
 import { listAudit } from "@/lib/audit";
+import { stripCitations } from "@/lib/agent/executor";
 import { ActionButton } from "@/components/action-button";
 import { AutoRefresh } from "@/components/auto-refresh";
 import { DraftEditor } from "@/components/draft-editor";
@@ -372,7 +373,7 @@ function AgentSteps({ run, caseId, currency, evidence, pp }: { run: AgentRun; ca
         <ol className="mt-4 flex list-decimal flex-col gap-1.5 pl-5 text-[0.92rem] marker:text-faint">
           {analyst.reasoning_steps.map((s, i) => (
             <li key={i}>
-              {s.step}
+              {stripCitations(s.step)}
               <Cite ids={s.evidence_ids} items={evidence} />
             </li>
           ))}
@@ -391,7 +392,7 @@ function AgentSteps({ run, caseId, currency, evidence, pp }: { run: AgentRun; ca
                 <ul className="mt-2 flex flex-col gap-1 pl-4">
                   {writer.statements.map((s, i) => (
                     <li key={i} className="list-disc">
-                      {s.text}
+                      {stripCitations(s.text)}
                       <Cite ids={s.evidence_ids} items={evidence} />
                     </li>
                   ))}

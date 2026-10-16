@@ -26,7 +26,7 @@ Deadline: Nov 12, 2026, 12:00pm PST.
 **Phase 4: submission package**
 - README (setup, architecture diagram, real vs simulated, AI tools, responsible design, limitations), DEVPOST.md, DEMO_SCRIPT.md, SUBMISSION_CHECKLIST.md, render.yaml.
 
-**Tests:** 32 passing (`npm test`).
+**Tests:** 33 passing (`npm test`).
 
 ## Next (needs Kavee)
 

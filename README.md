@@ -50,7 +50,7 @@ For a production build: `npm run go` (builds once, then starts).
 npm test
 ```
 
-32 tests cover the Policy Gate, the rule that status only ever comes from PayPal, the Executor allowlist, prompt injection handling, personal data scrubbing (without destroying tracking numbers), citation checks and the simulator.
+33 tests cover the Policy Gate, the rule that status only ever comes from PayPal, the Executor allowlist, prompt injection handling, personal data scrubbing (without destroying tracking numbers), citation checks and the simulator.
 
 ## How it works
 
