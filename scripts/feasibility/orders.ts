@@ -108,6 +108,11 @@ if (cmd === "create") {
     const order = await api(`order-get-${key}`, "GET", `/v2/checkout/orders/${c.orderId}`);
     const unit = order.body?.purchase_units?.[0];
     const trackers = unit?.shipping?.trackers ?? [];
+    // The capture response omits the payee, so take the merchant id from here.
+    if (unit?.payee?.merchant_id && !c.merchantId) {
+      c.merchantId = unit.payee.merchant_id;
+      saveState(state);
+    }
     console.log(
       `  ${key}: order=${order.body?.status} capture=${unit?.payments?.captures?.[0]?.status ?? "-"} trackers=${trackers.length}`,
     );
