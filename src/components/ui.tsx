@@ -7,12 +7,14 @@ export function money(n: number, currency = "USD") {
 
 export function shortDate(iso?: string) {
   if (!iso) return "";
-  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 }
 
+// Pages render on the server, so times are shown in UTC and labelled as such
+// rather than in whatever zone the host happens to use.
 export function dateTime(iso?: string) {
   if (!iso) return "";
-  return new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+  return `${new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "UTC" })} UTC`;
 }
 
 const TONES: Record<DisplayStatus["tone"], string> = {
