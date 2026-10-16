@@ -13,6 +13,7 @@ const Env = z.object({
   GEMINI_API_KEY: z.string().optional(),
   GEMINI_MODEL: z.string().optional(),
   GEMINI_FALLBACK_MODEL: z.string().optional(),
+  GEMINI_THINKING_LEVEL: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
   ANTHROPIC_MODEL: z.string().optional(),
   DATABASE_PATH: z.string().optional(),
@@ -61,6 +62,8 @@ export const config = {
       apiKey: env.GEMINI_API_KEY?.trim() ?? "",
       model: env.GEMINI_MODEL?.trim() || "gemini-3.8-flash",
       fallbackModel: env.GEMINI_FALLBACK_MODEL?.trim() || "gemini-3.5-flash-lite",
+      // "low" keeps answers around 5 seconds. Set to "" to use the model default.
+      thinkingLevel: env.GEMINI_THINKING_LEVEL === undefined ? "low" : env.GEMINI_THINKING_LEVEL.trim(),
     },
     anthropic: {
       apiKey: env.ANTHROPIC_API_KEY?.trim() ?? "",

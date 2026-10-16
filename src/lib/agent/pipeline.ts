@@ -44,15 +44,22 @@ export async function runPipeline(caseId: string, opts: { override?: Recommendat
     ? { name: ai.name, label: ai.label, model: "", offline: false }
     : { name: "offline", label: "Offline rules (no AI key)", model: "rules-v1", offline: true };
 
-  // Step 1: Case Analyst
+  // Step 1: Case Analyst. If the AI provider is down or too slow, fall back
+  // to the offline rules and say so, rather than leave the seller waiting.
   let analyst;
+  let useAi = !!ai;
   if (ai) {
-    const r = await runAnalyst(ai, c, bundle);
-    analyst = r.data;
-    provider.model = r.model;
-  } else {
-    analyst = offlineAnalyst(c, bundle);
+    try {
+      const r = await runAnalyst(ai, c, bundle);
+      analyst = r.data;
+      provider.model = r.model;
+    } catch (err) {
+      useAi = false;
+      Object.assign(provider, { label: `Offline rules (${ai.name === "gemini" ? "Gemini" : "Claude"} unavailable)`, model: "rules-v1", offline: true });
+      audit("guardrail", `AI provider failed, used offline rules instead: ${(err as Error).message}`, {}, c.id);
+    }
   }
+  analyst ??= offlineAnalyst(c, bundle);
   const ev = expectedValue(analyst.win_probability, c.amount, policy.hourlyValue);
   const recommendation = opts.override ?? analyst.recommendation;
   audit(
@@ -70,7 +77,15 @@ export async function runPipeline(caseId: string, opts: { override?: Recommendat
   let writer: WriterOutput | undefined;
   let verification = { unknownIds: [] as string[], unsupported: [] as string[] };
   if (plan.purpose) {
-    writer = ai ? (await runWriter(ai, c, bundle, analyst, plan.purpose)).data : offlineWriter(c, bundle, plan.purpose);
+    if (ai && useAi) {
+      try {
+        writer = (await runWriter(ai, c, bundle, analyst, plan.purpose)).data;
+      } catch (err) {
+        provider.label += ". Draft written by offline rules (AI unavailable)";
+        audit("guardrail", `AI provider failed while drafting, used the offline template: ${(err as Error).message}`, {}, c.id);
+      }
+    }
+    writer ??= offlineWriter(c, bundle, plan.purpose);
     writer = { ...writer, response_text: stripCitations(writer.response_text) };
     verification = verifyCitations(writer, bundle);
     audit("agent_decision", `Evidence Writer drafted a ${plan.purpose.replace("_", " ")} (${writer.statements.length} cited statements)`, { writer, verification }, c.id);

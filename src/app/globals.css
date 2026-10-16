@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #1f2a5c; /* batik indigo, brand and text */
+  --color-ink-soft: #3a4677;
+  --color-muted: #5a6380;
+  --color-paper: #f2f4f8; /* cool blue-grey page */
+  --color-surface: #ffffff;
+  --color-rule: #d6dbe6;
+  --color-rule-strong: #b9c1d3;
+  --color-turmeric: #d99a1e; /* needs you, deadlines */
+  --color-turmeric-soft: #fbf1dc;
+  --color-turmeric-ink: #7a5208;
+  --color-pandan: #2e7a57; /* confirmed wins */
+  --color-pandan-soft: #e3f2ea;
+  --color-chili: #bf3f2c; /* losses, errors */
+  --color-chili-soft: #f9e6e2;
+  --color-sky: #2f5fb3; /* processing at PayPal */
+  --color-sky-soft: #e5edfa;
+
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-atkinson), ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.num {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-sky);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Demo strip: diagonal hatching so simulated mode is impossible to miss. */
+.hatch {
+  background-image: repeating-linear-gradient(-45deg, var(--color-turmeric-soft) 0 10px, #f6e3b8 10px 20px);
+}
+
+@keyframes tip {
+  from {
+    transform: rotate(0deg);
+  }
+}
+.scale-beam {
+  transform-origin: 50% 50%;
+  animation: tip 900ms cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}

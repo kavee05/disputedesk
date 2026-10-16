@@ -4,8 +4,8 @@ import { agentRuns, cases } from "../db/schema";
 import type { PayPalDispute } from "../paypal/types";
 import { normalizeDispute, type Case, type CaseSource } from "./model";
 
-export function upsertCase(d: PayPalDispute, source: CaseSource): Case {
-  const c = normalizeDispute(d, source);
+export function upsertCase(d: PayPalDispute, source: CaseSource, extra: Pick<Case, "confirmedRefunds" | "sandboxAdjudicated"> = {}): Case {
+  const c = { ...normalizeDispute(d, source), ...extra };
   const row = { id: c.id, source, data: JSON.stringify(c), raw: JSON.stringify(d), syncedAt: now() };
   db()
     .insert(cases)

@@ -11,11 +11,13 @@
     "probe:disputes": "tsx scripts/feasibility/disputes.ts",
     "probe:chargeback": "tsx scripts/feasibility/chargeback.ts",
     "probe:toolkit": "tsx scripts/feasibility/toolkit.ts",
-    "dev": "next dev",
+    "dev": "node scripts/run.mjs dev",
     "build": "next build",
     "start": "next start",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "demo": "node scripts/run.mjs demo",
+    "go": "node scripts/run.mjs prod"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",

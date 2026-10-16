@@ -42,11 +42,15 @@ class GeminiProvider implements LlmProvider {
 
   async generateJson<T>(req: JsonRequest<T>): Promise<JsonResult<T>> {
     const models = [config.ai.gemini.model, config.ai.gemini.fallbackModel].filter((m, i, a) => m && a.indexOf(m) === i);
+    // A seller should not wait minutes: hard budget across all retries.
+    const deadline = Date.now() + 75_000;
     let lastErr: unknown;
     for (const model of models) {
       for (let attempt = 1; attempt <= 2; attempt++) {
+        const left = deadline - Date.now();
+        if (left < 5_000) throw new LlmError(`Gemini timeout: no answer within the time budget (${lastErr instanceof Error ? lastErr.message : "busy"})`);
         try {
-          const text = await this.call(model, req);
+          const text = await this.call(model, req, Math.min(35_000, left));
           return { data: parseOrThrow(req.schema, text), model };
         } catch (err) {
           lastErr = err;
@@ -59,7 +63,10 @@ class GeminiProvider implements LlmProvider {
     throw lastErr instanceof Error ? lastErr : new LlmError(String(lastErr));
   }
 
-  private async call(model: string, req: JsonRequest<unknown>): Promise<string> {
+  private async call(model: string, req: JsonRequest<unknown>, timeoutMs: number, thinking = true): Promise<string> {
+    // Gemini 3 models think by default, which took over a minute per call in
+    // testing. A low thinking level answers in about 5 seconds.
+    const level = config.ai.gemini.thinkingLevel;
     let res: Response;
     try {
       res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
@@ -68,14 +75,20 @@ class GeminiProvider implements LlmProvider {
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: req.system }] },
           contents: [{ role: "user", parts: [{ text: req.user }] }],
-          generationConfig: { responseMimeType: "application/json", responseJsonSchema: jsonSchemaFor(req.schema), temperature: 0.2 },
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseJsonSchema: jsonSchemaFor(req.schema),
+            temperature: 0.2,
+            ...(thinking && level ? { thinkingConfig: { thinkingLevel: level } } : {}),
+          },
         }),
-        signal: AbortSignal.timeout(90_000),
+        signal: AbortSignal.timeout(timeoutMs),
       });
     } catch (err) {
       throw new LlmError(`Gemini request timeout or network error: ${(err as Error).message}`);
     }
     const body = (await res.json().catch(() => ({}))) as any;
+    if (res.status === 400 && thinking && /thinking/i.test(body?.error?.message ?? "")) return this.call(model, req, timeoutMs, false);
     if (!res.ok) throw new LlmError(`Gemini ${res.status}: ${body?.error?.message ?? "request failed"}`);
     const text = (body.candidates?.[0]?.content?.parts ?? []).map((p: any) => p.text ?? "").join("");
     if (!text) throw new LlmError(`Gemini returned no content (finish reason ${body.candidates?.[0]?.finishReason ?? "unknown"})`);

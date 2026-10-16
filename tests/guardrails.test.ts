@@ -79,6 +79,12 @@ describe("prompt injection and personal data", () => {
     expect(a.recommendation).toBe("FIGHT");
   });
 
+  it("keeps tracking and order numbers intact", () => {
+    for (const t of ["EP912345678MY", "9400111899223197428490", "JT6001234567", "NVSGDD0001234", "Order SIMORD1001", "123456789012"]) {
+      expect(scrubPersonalData(`Tracking ${t} delivered`)).toBe(`Tracking ${t} delivered`);
+    }
+  });
+
   it("scrubs emails, phones, long numbers and known names", () => {
     expect(scrubPersonalData("I am John Doe, john@x.com, 4111111111111111, +1 (415) 555-0100", ["John Doe"])).toBe(
       "I am [buyer] [buyer], [email removed], [number removed], [phone removed]",

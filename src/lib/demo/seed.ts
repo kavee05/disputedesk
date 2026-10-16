@@ -199,10 +199,12 @@ function build(f: Fixture) {
 
 // Wipes local data. In sandbox mode this only clears our cache, never PayPal.
 export function resetLocalData(opts: { keepPolicy?: boolean } = {}) {
-  const tables = ["cases", "evidence_bundles", "agent_runs", "audit_log", "sim_store", ...(opts.keepPolicy ? [] : ["policy"])];
+  const tables = ["cases", "evidence_bundles", "agent_runs", "audit_log", ...(opts.keepPolicy ? [] : ["policy"])];
   const conn = sqlite();
   conn.transaction(() => {
     for (const t of tables) conn.prepare(`DELETE FROM ${t}`).run();
+    // Sandbox test-order records are kept so their approve links survive a reset.
+    conn.prepare(`DELETE FROM sim_store WHERE kind != 'kit_order'`).run();
   })();
 }
 
@@ -216,7 +218,9 @@ export function seedDemoCases() {
     simWrite("order", order.id, order);
     simWrite("trackers", capture.id, trackers);
     if (refund) simWrite("refund", refund.id, refund);
-    upsertCase(dispute, "simulated");
+    upsertCase(dispute, "simulated", {
+      confirmedRefunds: refund ? [{ id: refund.id, status: refund.status, amount: refund.amount, checkedAt: new Date().toISOString() }] : [],
+    });
   }
   audit("system", `Seeded ${FIXTURES.length} simulated demo cases`, { ids: FIXTURES.map((f) => f.id) });
   return FIXTURES.length;

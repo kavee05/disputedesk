@@ -23,6 +23,10 @@ export type Case = {
   evidences: { type: string; source?: string; at?: string; notes?: string }[];
   outcome?: { code: string; reason?: string; amountRefunded?: string };
   refundIds: string[];
+  // Refund resources as PayPal reported them at the last sync.
+  confirmedRefunds?: { id: string; status: string; amount?: string; checkedAt: string }[];
+  // True once a sandbox-only adjudicate call was accepted for this case.
+  sandboxAdjudicated?: boolean;
 };
 
 export const REASON_LABELS: Record<string, string> = {
