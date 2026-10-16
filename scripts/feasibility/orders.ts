@@ -70,19 +70,28 @@ if (cmd === "create") {
     if (!c.captureId) console.log(`  ${key}  $${c.amount}  ${c.item}\n      ${c.approveUrl}`);
   }
 } else if (cmd === "capture") {
+  const notCompleted: string[] = [];
   for (const [key, c] of Object.entries(state.cases) as [CaseKey, CaseState][]) {
     if (!c.orderId) continue;
     if (!c.captureId) {
       const res = await api(`order-capture-${key}`, "POST", `/v2/checkout/orders/${c.orderId}/capture`, { json: {} });
       if (!res.ok) {
         console.log(`  ${key}: capture failed, was the order approved? ${res.body?.details?.[0]?.issue ?? ""}`);
+        notCompleted.push(`${key} (capture call failed)`);
         continue;
       }
       const capture = res.body.purchase_units?.[0]?.payments?.captures?.[0];
       c.captureId = capture?.id;
       c.merchantId = res.body.purchase_units?.[0]?.payee?.merchant_id;
-      console.log(`  ${key}: captured ${capture?.id} status=${capture?.status}`);
       saveState(state);
+    }
+    // Trust PayPal's capture resource, not the order, for whether money moved.
+    const cap = await api(`capture-get-${key}`, "GET", `/v2/payments/captures/${c.captureId}`);
+    const status = cap.body?.status;
+    console.log(`  ${key} $${c.amount}: capture ${c.captureId} ${status} ${JSON.stringify(cap.body?.status_details ?? {})}`);
+    if (status !== "COMPLETED") {
+      notCompleted.push(`${key} (${status})`);
+      continue; // no tracking on money that has not settled
     }
     const plan = PLAN[key];
     if (plan.tracking && !c.tracking && c.captureId) {
@@ -102,6 +111,11 @@ if (cmd === "create") {
       }
     }
   }
+  if (notCompleted.length) {
+    console.log(`\nSTOP: not COMPLETED: ${notCompleted.join(", ")}. Do not open disputes yet.`);
+    process.exit(2);
+  }
+  console.log("\nAll captures COMPLETED.");
 } else if (cmd === "status") {
   for (const [key, c] of Object.entries(state.cases) as [CaseKey, CaseState][]) {
     if (!c.orderId) continue;
