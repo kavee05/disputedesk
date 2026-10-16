@@ -36,3 +36,6 @@ devpost-images/
 DEMO_SCRIPT.md
 SUBMISSION_CHECKLIST.md
 PROGRESS.md
+
+# Local Claude Code config
+.claude/
