@@ -1,44 +1,56 @@
 @import "tailwindcss";
 
 @theme {
-  /* Batik indigo: brand, primary text and the sidebar */
-  --color-ink: #1c2654;
-  --color-ink-soft: #3b4675;
-  --color-night: #18214a; /* sidebar */
-  --color-night-2: #222c5c; /* sidebar hover */
-  --color-muted: #5f6886;
-  --color-faint: #8a92ad;
-  --color-paper: #f6f7fb; /* canvas */
+  /* Navy and slate on a cool canvas. One accent family: violet. */
+  --color-ink: #111a3a; /* primary text and key figures */
+  --color-ink-soft: #3a4466;
+  --color-muted: #6b7390; /* subtitles and dates */
+  --color-faint: #a2a8bd;
+  --color-canvas: #eceef4; /* outside the app frame */
+  --color-paper: #f7f8fb; /* inside the app frame */
   --color-surface: #ffffff;
-  --color-rule: #e3e7f0;
-  --color-rule-strong: #c9d0e0;
-  --color-turmeric: #d99a1e; /* needs you, deadlines */
-  --color-turmeric-soft: #fdf3dd;
-  --color-turmeric-ink: #7a5208;
-  --color-pandan: #2e7a57; /* confirmed wins */
-  --color-pandan-soft: #e4f3eb;
-  --color-chili: #bf3f2c; /* losses, errors */
-  --color-chili-soft: #fbe9e5;
-  --color-sky: #2f5fb3; /* at PayPal, processing */
-  --color-sky-soft: #e7eefb;
+  --color-well: #f1f2f7; /* recessed areas: tabs, inputs, code */
+  --color-rule: #eceef4;
+  --color-rule-strong: #dcdfe9;
 
-  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --color-brand: #5b4fe9;
+  --color-brand-2: #8b5cf6;
+  --color-brand-soft: #efedff;
+  --color-brand-ink: #4338ca;
 
-  --shadow-panel: 0 1px 2px rgba(24, 33, 74, 0.05), 0 4px 16px -6px rgba(24, 33, 74, 0.08);
-  --shadow-lift: 0 2px 4px rgba(24, 33, 74, 0.06), 0 12px 32px -12px rgba(24, 33, 74, 0.18);
+  /* Status colours stay flat and keep their meaning */
+  --color-turmeric: #e5a019; /* needs you, deadlines */
+  --color-turmeric-soft: #fff5e1;
+  --color-turmeric-ink: #8a5a00;
+  --color-pandan: #12946a; /* confirmed wins */
+  --color-pandan-soft: #e5f6ee;
+  --color-chili: #e0464b; /* losses, errors */
+  --color-chili-soft: #fdecec;
+  --color-sky: #3466d6; /* at PayPal, processing */
+  --color-sky-soft: #eaf0fd;
+
+  --font-display: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  /* Soft UI elevation, tinted navy rather than black */
+  --shadow-soft: 0 10px 30px rgba(17, 26, 58, 0.045), 0 1px 3px rgba(17, 26, 58, 0.04);
+  --shadow-lift: 0 18px 40px rgba(17, 26, 58, 0.08), 0 2px 6px rgba(17, 26, 58, 0.05);
+  --shadow-frame: 0 30px 80px rgba(17, 26, 58, 0.06), 0 2px 8px rgba(17, 26, 58, 0.03);
+  --shadow-brand: 0 10px 24px rgba(91, 79, 233, 0.28), 0 2px 6px rgba(91, 79, 233, 0.2);
 }
 
 html {
-  background: var(--color-paper);
+  background: var(--color-canvas);
   color: var(--color-ink);
+  scroll-behavior: smooth;
 }
 
 body {
   font-family: var(--font-sans);
   font-size: 0.9375rem;
-  line-height: 1.55;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
 }
 
 h1,
@@ -46,19 +58,24 @@ h2,
 h3 {
   font-family: var(--font-display);
   line-height: 1.15;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
 }
 
 .num {
   font-family: var(--font-display);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-sky);
+  outline: 2px solid var(--color-brand);
   outline-offset: 2px;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -70,18 +87,33 @@ h3 {
   }
 }
 
-/* A faint batik dot motif on the sidebar, the one decorative texture. */
-.batik {
-  background-color: var(--color-night);
+/* The one gradient: violet with off-centre light and a fine grain, used on
+   the brand mark, primary buttons and the money-defended card only. */
+.brand-gradient {
+  background-color: var(--color-brand);
   background-image:
-    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.07) 1px, transparent 1.5px),
-    radial-gradient(circle at 10px 10px, rgba(217, 154, 30, 0.08) 1.2px, transparent 1.8px);
-  background-size: 20px 20px, 20px 20px;
+    radial-gradient(110% 130% at 0% 0%, rgba(167, 139, 250, 0.9) 0%, rgba(167, 139, 250, 0) 55%),
+    radial-gradient(120% 120% at 100% 100%, rgba(55, 42, 196, 0.95) 0%, rgba(55, 42, 196, 0) 60%),
+    linear-gradient(135deg, #5b4fe9 0%, #7c5cf3 100%);
+}
+.grain {
+  position: relative;
+  isolation: isolate;
+}
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.9'/></svg>");
 }
 
 /* Demo strip: hatching so simulated mode is impossible to miss. */
 .hatch {
-  background-image: repeating-linear-gradient(-45deg, var(--color-turmeric-soft) 0 10px, #f8e6bd 10px 20px);
+  background-image: repeating-linear-gradient(-45deg, var(--color-turmeric-soft) 0 10px, #fbeccb 10px 20px);
 }
 
 /* Switch built on a native checkbox, so forms and screen readers just work. */
@@ -89,27 +121,27 @@ h3 {
   appearance: none;
   position: relative;
   flex-shrink: 0;
-  width: 2.5rem;
-  height: 1.4rem;
+  width: 2.6rem;
+  height: 1.5rem;
   border-radius: 999px;
   background: var(--color-rule-strong);
   cursor: pointer;
-  transition: background-color 160ms ease;
+  transition: background-color 180ms ease;
 }
 .switch::after {
   content: "";
   position: absolute;
   top: 0.2rem;
   left: 0.2rem;
-  width: 1rem;
-  height: 1rem;
+  width: 1.1rem;
+  height: 1.1rem;
   border-radius: 999px;
   background: #fff;
-  box-shadow: 0 1px 2px rgba(24, 33, 74, 0.3);
-  transition: transform 160ms ease;
+  box-shadow: 0 1px 3px rgba(17, 26, 58, 0.25);
+  transition: transform 180ms cubic-bezier(0.3, 1.3, 0.5, 1);
 }
 .switch:checked {
-  background: var(--color-ink);
+  background: var(--color-brand);
 }
 .switch:checked::after {
   transform: translateX(1.1rem);

@@ -69,7 +69,7 @@ export default function DemoPage() {
             <ol className="flex flex-col gap-4">
               {STEPS.map((step, i) => (
                 <li key={i} className="flex gap-3">
-                  <span className="num flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink/[0.07] text-sm font-bold text-ink">{i + 1}</span>
+                  <span className="num flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-soft text-[0.8rem] font-bold text-brand-ink">{i + 1}</span>
                   <p className="pt-0.5 text-[0.92rem] text-ink-soft">{step}</p>
                 </li>
               ))}

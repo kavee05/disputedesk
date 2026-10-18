@@ -6,14 +6,14 @@ import type { ActionState } from "@/app/actions";
 type Variant = "primary" | "secondary" | "danger" | "quiet";
 
 export const BUTTON_STYLES: Record<Variant, string> = {
-  primary: "bg-ink text-white shadow-[0_1px_2px_rgba(24,33,74,0.25)] hover:bg-ink-soft",
-  secondary: "border border-rule-strong bg-surface text-ink shadow-[0_1px_2px_rgba(24,33,74,0.06)] hover:border-ink-soft hover:bg-paper",
-  danger: "border border-chili/35 bg-surface text-chili hover:bg-chili-soft",
-  quiet: "px-2 text-ink-soft hover:bg-paper hover:text-ink",
+  primary: "brand-gradient text-white shadow-[var(--shadow-brand)] hover:brightness-[1.06]",
+  secondary: "bg-surface text-ink shadow-[var(--shadow-soft)] ring-1 ring-rule-strong/80 hover:ring-brand/40 hover:text-brand-ink",
+  danger: "bg-surface text-chili ring-1 ring-chili/30 hover:bg-chili-soft",
+  quiet: "px-2.5 text-muted hover:bg-well hover:text-ink",
 };
 
 export const BUTTON_BASE =
-  "inline-flex min-h-9 items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors disabled:cursor-wait disabled:opacity-60";
+  "inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2 text-[0.88rem] font-semibold transition-all duration-200 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 disabled:active:scale-100";
 
 // A button that runs a server action and reports what happened, in place.
 export function ActionButton({

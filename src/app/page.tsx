@@ -7,7 +7,7 @@ import { listCases } from "@/lib/cases/repo";
 import { isOpen } from "@/lib/cases/status";
 import { latestRun, type AgentRun } from "@/lib/agent/runs";
 import { ActionButton } from "@/components/action-button";
-import { deadlineInfo, DeadlineBar, Empty, ItemTile, money, PageHeader, Panel, SourceBadge, Stat, StatusPill } from "@/components/ui";
+import { deadlineInfo, DeadlineBar, Empty, GradientStat, ItemTile, money, PageHeader, Panel, SourceBadge, Stat, StatusPill } from "@/components/ui";
 
 const VIEWS = [
   { key: "needs", label: "Needs you" },
@@ -62,7 +62,7 @@ export default async function Inbox({ searchParams }: { searchParams: Promise<{ 
         </ActionButton>
       </PageHeader>
 
-      <div className="mb-7 grid grid-cols-2 gap-3 xl:grid-cols-4 xl:gap-4">
+      <div className="mb-8 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4 xl:gap-5">
         <Stat label="Needs you" value={String(counts.needs)} tone={counts.needs ? "text-turmeric-ink" : ""} icon={<InboxIcon className="h-4 w-4" />}>
           Cases waiting on a reply or your approval
         </Stat>
@@ -72,22 +72,22 @@ export default async function Inbox({ searchParams }: { searchParams: Promise<{ 
         <Stat label="Due in 3 days" value={String(dueSoon)} tone={dueSoon ? "text-chili" : ""} icon={<Clock className="h-4 w-4" />}>
           Reply before PayPal&apos;s deadline
         </Stat>
-        <Stat label="Defended" value={money(defended)} tone="text-pandan" icon={<CheckCircle2 className="h-4 w-4" />}>
+        <GradientStat label="Money defended" value={money(defended)}>
           Confirmed by PayPal outcomes only
-        </Stat>
+        </GradientStat>
       </div>
 
       <Panel>
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule px-4 py-3 sm:px-5">
-          <div role="tablist" aria-label="Filter disputes" className="flex flex-wrap gap-1 rounded-lg bg-paper p-1">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-rule px-4 py-3.5 sm:px-6">
+          <div role="tablist" aria-label="Filter disputes" className="flex flex-wrap gap-1 rounded-xl bg-well p-1">
             {VIEWS.map((v) => (
               <Link
                 key={v.key}
                 role="tab"
                 aria-selected={view === v.key}
                 href={v.key === "needs" ? "/" : `/?view=${v.key}`}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium ${
-                  view === v.key ? "bg-surface text-ink shadow-[0_1px_2px_rgba(24,33,74,0.12)]" : "text-muted hover:text-ink"
+                className={`rounded-lg px-3.5 py-1.5 text-[0.85rem] font-medium transition-all ${
+                  view === v.key ? "bg-surface text-ink shadow-[var(--shadow-soft)]" : "text-muted hover:text-ink"
                 }`}
               >
                 {v.label} <span className="num ml-0.5 text-faint">{counts[v.key]}</span>
@@ -132,24 +132,24 @@ export default async function Inbox({ searchParams }: { searchParams: Promise<{ 
             {/* Desktop table */}
             <table className="hidden w-full text-left xl:table">
               <thead>
-                <tr className="text-[0.8rem] text-muted">
-                  <th className="px-5 py-2.5 font-medium">Case</th>
+                <tr className="text-[0.75rem] font-medium text-faint">
+                  <th className="px-6 py-3 font-medium">Case</th>
                   <th className="px-3 py-2.5 text-right font-medium">Amount</th>
                   <th className="px-3 py-2.5 font-medium">Respond by</th>
                   <th className="px-3 py-2.5 font-medium">PayPal status</th>
-                  <th className="px-5 py-2.5 font-medium">Agent</th>
+                  <th className="px-6 py-3 font-medium">Agent</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map(({ c, s, run }) => {
                   const a = agentSummary(run);
                   return (
-                    <tr key={c.id} className="group border-t border-rule transition-colors hover:bg-paper/70">
-                      <td className="px-5 py-3.5">
+                    <tr key={c.id} className="group border-t border-rule transition-colors hover:bg-paper">
+                      <td className="px-6 py-4">
                         <Link href={`/cases/${c.id}`} className="flex items-center gap-3">
                           <ItemTile name={c.itemSummary ?? c.reasonLabel} />
                           <span className="min-w-0">
-                            <span className="block font-semibold text-ink group-hover:underline">{c.itemSummary ?? c.reasonLabel}</span>
+                            <span className="block font-semibold text-ink transition-colors group-hover:text-brand-ink">{c.itemSummary ?? c.reasonLabel}</span>
                             <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[0.8rem] text-muted">
                               {c.reasonLabel} <SourceBadge source={c.source} />
                             </span>

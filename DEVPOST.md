@@ -75,3 +75,7 @@ nextjs, typescript, react, tailwindcss, sqlite, drizzle, zod, paypal-disputes-ap
 - Live demo (demo mode, simulated PayPal, real AI): https://disputedesk-zcru.onrender.com
 - Code and setup: https://github.com/kavee05/disputedesk
 - Run locally with one command: `npm install && npm run demo`
+
+## Credits
+
+Built by Kaveetiran A/L Sitambaram. I defined the problem and the product, designed the agent pipeline and its safety rules, made the product and design decisions, and directed and reviewed the work. Claude Code (Anthropic) was used as a coding assistant to write, debug and test the application.

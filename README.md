@@ -139,3 +139,9 @@ tests/               Vitest suite
 ```
 
 Built with Next.js, TypeScript, Tailwind CSS, SQLite (better-sqlite3 with Drizzle) and zod.
+
+## Credits
+
+Built by Kaveetiran A/L Sitambaram. I defined the problem and the product, designed the agent pipeline and its safety rules, made the product and design decisions, and directed and reviewed the work. Claude Code (Anthropic) was used as a coding assistant to write, debug and test the application.
+
+Released under the [MIT License](LICENSE).

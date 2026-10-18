@@ -7,7 +7,7 @@ import type { SellerPolicy } from "@/lib/agent/policy";
 import { BUTTON_BASE, BUTTON_STYLES, Result } from "@/components/action-button";
 
 const input =
-  "w-full rounded-lg border border-rule-strong bg-surface px-3 py-2 text-[0.92rem] outline-none focus:border-sky focus:ring-2 focus:ring-sky/15";
+  "w-full rounded-xl border border-rule-strong bg-well px-3.5 py-2.5 text-[0.92rem] outline-none transition focus:border-brand focus:bg-surface focus:ring-4 focus:ring-brand/10";
 
 // A settings section: what it is on the left, the controls on the right.
 // Headings are plain h2 elements (not fieldset legends, which browsers draw
@@ -19,7 +19,7 @@ function Section({ title, description, children }: { title: string; description:
         <h2 className="text-[1.05rem] font-semibold">{title}</h2>
         <p className="mt-1 text-sm text-muted">{description}</p>
       </div>
-      <div className="min-w-0 rounded-xl border border-rule bg-surface shadow-[var(--shadow-panel)]">{children}</div>
+      <div className="min-w-0 rounded-[20px] bg-surface shadow-[var(--shadow-soft)] ring-1 ring-rule/70">{children}</div>
     </section>
   );
 }
@@ -44,7 +44,7 @@ function NumberField({ name, label, hint, unit, ...rest }: { name: string; label
       <span className="block text-sm text-muted">{hint}</span>
       <span className="mt-2 flex items-stretch">
         <input name={name} type="number" className={`${input} rounded-r-none`} {...rest} />
-        <span className="flex items-center rounded-r-lg border border-l-0 border-rule-strong bg-paper px-3 text-sm text-muted">{unit}</span>
+        <span className="flex items-center rounded-r-xl border border-l-0 border-rule-strong bg-surface px-3.5 text-sm text-muted">{unit}</span>
       </span>
     </label>
   );
@@ -76,8 +76,8 @@ export function PolicyForm({ policy, reasons }: { policy: SellerPolicy; reasons:
       <Section title="Never act alone on these" description="Dispute reasons that always come to you, whatever the amount or confidence.">
         <div className="grid gap-x-6 gap-y-1 p-3 sm:grid-cols-2">
           {reasons.map(([code, label]) => (
-            <label key={code} className="flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 hover:bg-paper">
-              <input type="checkbox" name="neverAutoReasons" value={code} defaultChecked={policy.neverAutoReasons.includes(code)} className="h-4 w-4 shrink-0 accent-[#1c2654]" />
+            <label key={code} className="flex cursor-pointer items-center gap-3 rounded-xl px-2.5 py-2 transition-colors hover:bg-well">
+              <input type="checkbox" name="neverAutoReasons" value={code} defaultChecked={policy.neverAutoReasons.includes(code)} className="h-4 w-4 shrink-0 accent-[#5b4fe9]" />
               <span>{label}</span>
             </label>
           ))}
@@ -96,7 +96,7 @@ export function PolicyForm({ policy, reasons }: { policy: SellerPolicy; reasons:
         </label>
       </Section>
 
-      <div className="sticky bottom-0 z-10 -mx-4 mt-2 flex flex-wrap items-center gap-4 border-t border-rule bg-surface px-4 py-3.5 shadow-[0_-8px_24px_-12px_rgba(24,33,74,0.18)] sm:bottom-4 sm:mx-0 sm:rounded-xl sm:border sm:px-5">
+      <div className="sticky bottom-0 z-10 -mx-4 mt-2 flex flex-wrap items-center gap-4 border-t border-rule bg-surface px-4 py-3.5 shadow-[0_-10px_30px_-12px_rgba(17,26,58,0.14)] sm:mx-0 sm:rounded-t-[20px] sm:border-0 sm:px-5 sm:ring-1 sm:ring-rule/70">
         <button type="submit" disabled={pending} className={`${BUTTON_BASE} ${BUTTON_STYLES.primary}`}>
           <Save className="h-4 w-4" aria-hidden />
           {pending ? "Saving" : "Save policy"}

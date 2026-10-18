@@ -68,7 +68,7 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
         <ArrowLeft className="h-4 w-4" aria-hidden /> All disputes
       </Link>
 
-      <Panel as="div" className="mb-8 p-5 sm:p-6">
+      <Panel as="div" className="mb-8 p-6 sm:p-7">
         <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
           <div className="flex min-w-0 items-start gap-4">
             <ItemTile name={title} size="lg" />
@@ -128,8 +128,8 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
           {!run ? (
             <Panel as="div" className="p-6 sm:p-8">
               <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-ink text-white">
-                  <Bot className="h-6 w-6" aria-hidden />
+                <span className="brand-gradient grain flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-white shadow-[var(--shadow-brand)]">
+                  <Bot className="relative z-10 h-6 w-6" aria-hidden />
                 </span>
                 <div className="min-w-0">
                   <p className="font-[family-name:var(--font-display)] text-lg font-semibold">Let the agent build this case</p>
@@ -156,7 +156,7 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
 
         <aside className="flex min-w-0 flex-col gap-5" aria-label="PayPal record">
           <Panel>
-            <PanelHeader title={c.source === "sandbox" ? "PayPal record" : "Simulated PayPal record"} description={`Last read ${dateTime(c.syncedAt)}`}>
+            <PanelHeader title={c.source === "sandbox" ? "PayPal record" : "Simulated record"} description={`Last read ${dateTime(c.syncedAt)}`}>
               <ActionButton action={refreshCaseAction.bind(null, c.id)} variant="quiet" pendingLabel="Refreshing" icon={<RefreshCw className="h-3.5 w-3.5" aria-hidden />}>
                 Refresh
               </ActionButton>
@@ -203,14 +203,14 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
                         {i < all.length - 1 && <span className="absolute bottom-0 left-[15px] top-8 w-px bg-rule" aria-hidden />}
                         <span
                           className={`relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full ring-1 ring-inset ${
-                            e.untrusted ? "bg-turmeric-soft text-turmeric-ink ring-turmeric/30" : e.fromPayPal ? "bg-sky-soft text-sky ring-sky/20" : "bg-paper text-ink-soft ring-rule"
+                            e.untrusted ? "bg-turmeric-soft text-turmeric-ink ring-turmeric/30" : e.fromPayPal ? "bg-brand-soft text-brand ring-brand/15" : "bg-well text-ink-soft ring-rule"
                           }`}
                         >
                           <Icon className="h-4 w-4" aria-hidden />
                         </span>
                         <div className="min-w-0 text-sm">
                           <p className="font-semibold">
-                            <span className="mr-1.5 rounded bg-paper px-1 text-[0.72rem] font-medium text-muted">{e.id}</span>
+                            <span className="mr-1.5 rounded-md bg-well px-1.5 text-[0.68rem] font-semibold text-muted">{e.id}</span>
                             {e.title}
                           </p>
                           <p className={`mt-0.5 break-words ${e.untrusted ? "italic text-ink-soft" : "text-muted"}`}>
@@ -243,9 +243,9 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
           </Panel>
 
           {(canAdjudicate || status.sandboxAdjudication) && (
-            <section className="rounded-xl border border-sky/30 bg-sky-soft/60 p-5">
+            <section className="rounded-[20px] bg-brand-soft/70 p-6 ring-1 ring-brand/15">
               <h2 className="flex items-center gap-2 text-[1.05rem] font-semibold">
-                <ScaleIcon className="h-4 w-4 text-sky" aria-hidden />
+                <ScaleIcon className="h-4 w-4 text-brand" aria-hidden />
                 {c.source === "sandbox" ? "Sandbox adjudication" : "Simulated PayPal decision"}
               </h2>
               <p className="mt-1.5 text-sm text-ink-soft">
@@ -275,7 +275,7 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
 
           {responses.length > 0 && (
             <Panel>
-              <PanelHeader title={c.source === "sandbox" ? "PayPal responses" : "Simulated PayPal responses"} />
+              <PanelHeader title={c.source === "sandbox" ? "PayPal responses" : "Simulated responses"} />
               <ul className="flex flex-col gap-3 px-5 py-4 text-sm">
                 {responses.map((r) => (
                   <li key={r.id}>
@@ -299,8 +299,8 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
 
 type StepTone = "default" | "warn" | "good" | "bad";
 const STEP_DOT: Record<StepTone, string> = {
-  default: "bg-ink text-white",
-  warn: "bg-turmeric text-night",
+  default: "brand-gradient text-white shadow-[var(--shadow-brand)]",
+  warn: "bg-turmeric text-white",
   good: "bg-pandan text-white",
   bad: "bg-chili text-white",
 };
@@ -331,7 +331,7 @@ function Cite({ ids, items }: { ids: string[]; items: EvidenceItem[] }) {
           <span
             key={id}
             title={item ? item.title : "Not in the evidence bundle"}
-            className={`ml-1 inline-block rounded px-1 text-[0.72rem] font-medium ${item ? "bg-sky-soft text-sky" : "bg-chili-soft text-chili"}`}
+            className={`ml-1 inline-block rounded-md px-1.5 text-[0.7rem] font-semibold ${item ? "bg-brand-soft text-brand-ink" : "bg-chili-soft text-chili"}`}
           >
             {id}
           </span>
@@ -488,7 +488,7 @@ function AgentSteps({ run, caseId, currency, evidence, pp }: { run: AgentRun; ca
             )}
             <details className="mt-2">
               <summary className="cursor-pointer font-medium text-ink-soft">{pp} response, exactly as received</summary>
-              <pre className="mt-2 max-h-64 overflow-auto rounded-lg bg-paper p-3 text-xs">{JSON.stringify(execution.response ?? execution.error, null, 2)}</pre>
+              <pre className="mt-2 max-h-64 overflow-auto rounded-xl bg-well p-3 text-xs">{JSON.stringify(execution.response ?? execution.error, null, 2)}</pre>
             </details>
           </div>
         )}

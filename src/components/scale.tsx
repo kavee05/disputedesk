@@ -8,17 +8,17 @@ export function Scale({ ev, currency }: { ev: ExpectedValue; currency: string })
   const angle = ratio * 14; // fight is on the right; a positive angle tips the right pan down
   const fightBetter = ev.favours === "FIGHT";
   return (
-    <figure className="rounded-xl border border-rule bg-paper/70 p-4 sm:p-5">
+    <figure className="rounded-2xl bg-paper p-4 ring-1 ring-rule/80 sm:p-5">
       <svg viewBox="0 20 320 110" className="mx-auto block h-auto w-full max-w-[420px]" role="img" aria-label={`Fighting ${fightBetter ? "is worth more" : "is worth less"} than refunding`}>
-        <polygon points="160,62 146,110 174,110" fill="#1c2654" />
-        <rect x="120" y="108" width="80" height="6" rx="3" fill="#1c2654" />
+        <polygon points="160,62 146,110 174,110" fill="#111a3a" />
+        <rect x="120" y="108" width="80" height="6" rx="3" fill="#111a3a" />
         <g className="scale-beam" style={{ transform: `rotate(${angle}deg)`, transformOrigin: "160px 59px" }}>
-          <rect x="30" y="56" width="260" height="6" rx="3" fill="#1c2654" />
-          <circle cx="160" cy="59" r="7" fill="#d99a1e" />
-          <line x1="44" y1="59" x2="44" y2="78" stroke="#1c2654" strokeWidth="2" />
-          <line x1="276" y1="59" x2="276" y2="78" stroke="#1c2654" strokeWidth="2" />
-          <path d="M14 78 h60 a30 12 0 0 1 -60 0z" fill={fightBetter ? "#c9d0e0" : "#bf3f2c"} />
-          <path d="M246 78 h60 a30 12 0 0 1 -60 0z" fill={fightBetter ? "#2e7a57" : "#c9d0e0"} />
+          <rect x="30" y="56" width="260" height="6" rx="3" fill="#111a3a" />
+          <circle cx="160" cy="59" r="7" fill="#5b4fe9" />
+          <line x1="44" y1="59" x2="44" y2="78" stroke="#111a3a" strokeWidth="2" />
+          <line x1="276" y1="59" x2="276" y2="78" stroke="#111a3a" strokeWidth="2" />
+          <path d="M14 78 h60 a30 12 0 0 1 -60 0z" fill={fightBetter ? "#dcdfe9" : "#e0464b"} />
+          <path d="M246 78 h60 a30 12 0 0 1 -60 0z" fill={fightBetter ? "#12946a" : "#dcdfe9"} />
         </g>
       </svg>
       <figcaption className="mt-3 grid grid-cols-2 gap-3 text-sm">

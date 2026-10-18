@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { CheckCircle2, CircleDollarSign, Clock, Gauge, Receipt } from "lucide-react";
+import { CircleDollarSign, Clock, Gauge, Receipt } from "lucide-react";
 import { statusOf } from "@/lib/app";
 import { listCases } from "@/lib/cases/repo";
 import { isOpen } from "@/lib/cases/status";
 import { listRuns } from "@/lib/agent/runs";
 import { getPolicy } from "@/lib/agent/policy";
-import { AdjudicationBadge, Empty, ItemTile, money, PageHeader, Panel, PanelHeader, SourceBadge, Stat, StatusPill } from "@/components/ui";
+import { AdjudicationBadge, Empty, GradientStat, ItemTile, money, PageHeader, Panel, PanelHeader, SourceBadge, Stat, StatusPill } from "@/components/ui";
 
 export default function ImpactPage() {
   const policy = getPolicy();
@@ -34,12 +34,12 @@ export default function ImpactPage() {
         intro="Money only counts as defended when PayPal itself reports the case resolved in your favour. Refunds only count once PayPal reports the refund as completed. Totals cover every synced case."
       />
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 xl:gap-4">
-        <Stat label="Money defended" value={money(defendedSandbox + defendedSim)} tone="text-pandan" icon={<CheckCircle2 className="h-4 w-4" />}>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4 xl:gap-5">
+        <GradientStat label="Money defended" value={money(defendedSandbox + defendedSim)}>
           {defendedSandbox > 0 && <span className="block">{money(defendedSandbox)} confirmed by PayPal Sandbox</span>}
           {defendedSim > 0 && <span className="block">{money(defendedSim)} in simulated cases</span>}
           {defendedSandbox + defendedSim === 0 && <span className="block">No case resolved for you yet</span>}
-        </Stat>
+        </GradientStat>
         <Stat label="Handled by the agent" value={String(handled)} icon={<Gauge className="h-4 w-4" />}>
           {auto} sent automatically, {approved} after your approval
         </Stat>

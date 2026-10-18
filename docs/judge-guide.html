@@ -5,25 +5,25 @@
 <title>DisputeDesk judge guide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&display=block" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=block" rel="stylesheet">
 <style>
   @page { size: A4; margin: 0; }
   :root {
-    --ink: #1c2654; --soft: #3b4675; --muted: #5f6886; --faint: #8a92ad;
-    --paper: #f6f7fb; --rule: #e3e7f0; --night: #18214a;
-    --gold: #d99a1e; --gold-soft: #fdf3dd; --green: #2e7a57; --green-soft: #e4f3eb;
-    --sky: #2f5fb3; --sky-soft: #e7eefb; --red: #bf3f2c;
+    --ink: #111a3a; --soft: #3a4466; --muted: #6b7390; --faint: #a2a8bd; --brand: #5b4fe9; --brand-soft: #efedff;
+    --paper: #f5f6fa; --rule: #eceef4; --night: #18214a;
+    --gold: #e5a019; --gold-soft: #fff5e1; --green: #12946a; --green-soft: #e5f6ee;
+    --sky: #3466d6; --sky-soft: #eaf0fd; --red: #e0464b;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background: #fff; }
   body {
-    font-family: "Instrument Sans", system-ui, sans-serif;
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
     font-size: 9pt; line-height: 1.45; color: var(--ink);
     -webkit-print-color-adjust: exact; print-color-adjust: exact;
   }
   .page { width: 210mm; height: 297mm; padding: 11mm 13mm 9mm; position: relative; overflow: hidden; page-break-after: always; display: flex; flex-direction: column; }
   .page:last-child { page-break-after: auto; }
-  h1, h2, h3, .num { font-family: "Bricolage Grotesque", system-ui, sans-serif; letter-spacing: -0.01em; }
+  h1, h2, h3, .num { font-family: "Plus Jakarta Sans", system-ui, sans-serif; letter-spacing: -0.01em; }
   h2 { font-size: 12pt; font-weight: 700; margin-bottom: 1.8mm; }
   h3 { font-size: 10pt; font-weight: 700; margin-bottom: 0.8mm; }
   p { color: var(--soft); }
@@ -33,10 +33,10 @@
   .muted { color: var(--muted); }
 
   /* Header band */
-  .band { background: var(--night); color: #fff; border-radius: 4mm; padding: 5mm 6.5mm 4.6mm; display: grid; grid-template-columns: 1fr auto; gap: 6mm; align-items: end;
-    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 1.5px); background-size: 4mm 4mm; }
+  .band { background: radial-gradient(110% 130% at 0% 0%, rgba(167,139,250,0.9) 0%, rgba(167,139,250,0) 55%), radial-gradient(120% 120% at 100% 100%, rgba(55,42,196,0.95) 0%, rgba(55,42,196,0) 60%), linear-gradient(135deg, #5b4fe9 0%, #7c5cf3 100%); color: #fff; border-radius: 5mm; padding: 5mm 6.5mm 4.6mm; display: grid; grid-template-columns: 1fr auto; gap: 6mm; align-items: end;
+     }
   .brand { display: flex; align-items: center; gap: 3.2mm; }
-  .mark { width: 11mm; height: 11mm; border-radius: 2.6mm; background: var(--gold); display: flex; align-items: center; justify-content: center; }
+  .mark { width: 11mm; height: 11mm; border-radius: 3mm; background: rgba(255,255,255,0.18); box-shadow: inset 0 0 0 0.3mm rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; }
   .band h1 { font-size: 21pt; font-weight: 800; line-height: 1; }
   .band .tag { margin-top: 1.4mm; color: rgba(255,255,255,0.72); font-size: 9.6pt; }
   .links { text-align: right; font-size: 8.6pt; line-height: 1.65; color: rgba(255,255,255,0.7); }
@@ -47,16 +47,16 @@
   /* Steps */
   .steps { counter-reset: s; display: grid; grid-template-columns: 1fr 1fr; gap: 1.8mm 6mm; }
   .steps li { list-style: none; counter-increment: s; position: relative; padding-left: 7.5mm; color: var(--soft); }
-  .steps li::before { content: counter(s); position: absolute; left: 0; top: 0.2mm; width: 5mm; height: 5mm; border-radius: 50%; background: var(--ink); color: #fff;
-    font: 700 7.6pt/5mm "Bricolage Grotesque", sans-serif; text-align: center; }
+  .steps li::before { content: counter(s); position: absolute; left: 0; top: 0.2mm; width: 5mm; height: 5mm; border-radius: 50%; background: var(--brand-soft); color: var(--brand);
+    font: 700 7.6pt/5mm "Plus Jakarta Sans", sans-serif; text-align: center; }
 
   /* Pipeline */
   .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.4mm; }
-  .stage { border: 0.3mm solid var(--rule); border-radius: 2.6mm; padding: 2.6mm 3mm 2.8mm; background: #fff; position: relative; }
-  .stage .n { width: 6mm; height: 6mm; border-radius: 50%; color: #fff; font: 700 8pt/6mm "Bricolage Grotesque", sans-serif; text-align: center; margin-bottom: 1.8mm; }
+  .stage { border: 0.3mm solid var(--rule); border-radius: 3.4mm; box-shadow: 0 2mm 6mm rgba(17,26,58,0.04); padding: 2.6mm 3mm 2.8mm; background: #fff; position: relative; }
+  .stage .n { width: 6mm; height: 6mm; border-radius: 50%; color: #fff; font: 700 8pt/6mm "Plus Jakarta Sans", sans-serif; text-align: center; margin-bottom: 1.8mm; }
   .stage .who { font-size: 7.6pt; color: var(--muted); margin-bottom: 1mm; }
   .stage p { font-size: 8.4pt; line-height: 1.4; }
-  .ai .n { background: var(--sky); } .code .n { background: var(--ink); } .pay .n { background: var(--green); }
+  .ai .n { background: var(--brand); } .code .n { background: var(--ink); } .pay .n { background: var(--green); }
   .stage:not(:last-child)::after { content: ""; position: absolute; right: -2.1mm; top: 5.6mm; width: 1.8mm; height: 1.8mm; border-top: 0.45mm solid var(--faint); border-right: 0.45mm solid var(--faint); transform: rotate(45deg); background: transparent; }
 
   /* Tables */
@@ -65,7 +65,7 @@
   td { padding: 1.5mm 2.4mm; border-bottom: 0.3mm solid var(--rule); vertical-align: top; color: var(--soft); }
   td:first-child { color: var(--ink); font-weight: 600; white-space: nowrap; }
   tr:last-child td { border-bottom: 0; }
-  .tablewrap { border: 0.3mm solid var(--rule); border-radius: 2.6mm; overflow: hidden; }
+  .tablewrap { border: 0.3mm solid var(--rule); border-radius: 3.4mm; overflow: hidden; box-shadow: 0 2mm 6mm rgba(17,26,58,0.04); }
   .pill { display: inline-block; padding: 0.2mm 2mm; border-radius: 3mm; font-size: 7.8pt; font-weight: 600; white-space: nowrap; }
   .p-green { background: var(--green-soft); color: var(--green); }
   .p-sky { background: var(--sky-soft); color: var(--sky); }
@@ -76,13 +76,13 @@
   .note h3 { display: flex; align-items: baseline; gap: 2mm; }
   .rules { counter-reset: r; display: grid; grid-template-columns: 1fr 1fr; gap: 2mm 7mm; }
   .rules div { counter-increment: r; position: relative; padding-left: 7mm; }
-  .rules div::before { content: counter(r); position: absolute; left: 0; top: 0; font: 800 12pt/1 "Bricolage Grotesque", sans-serif; color: var(--gold); }
+  .rules div::before { content: counter(r); position: absolute; left: 0; top: 0; font: 800 12pt/1 "Plus Jakarta Sans", sans-serif; color: var(--brand); }
 
   .stack { display: grid; grid-template-columns: auto 1fr; gap: 1.4mm 5mm; font-size: 8.8pt; }
   .stack dt { font-weight: 600; color: var(--ink); white-space: nowrap; }
   .stack dd { color: var(--soft); }
 
-  .callout { background: var(--paper); border-radius: 2.6mm; padding: 3.2mm 4mm; border-left: 1.2mm solid var(--gold); }
+  .callout { background: var(--brand-soft); border-radius: 3.4mm; padding: 3.2mm 4mm; border-left: 1.2mm solid var(--brand); }
   footer { margin-top: auto; padding-top: 2.4mm; border-top: 0.3mm solid var(--rule); display: flex; justify-content: space-between; font-size: 7.8pt; color: var(--faint); }
 </style>
 </head>
@@ -94,7 +94,7 @@
     <div>
       <div class="brand">
         <div class="mark">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#18214a" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M7 21h10M5 7h14M5 7l-3 7a3.5 3.5 0 0 0 6 0L5 7zm14 0-3 7a3.5 3.5 0 0 0 6 0l-3-7z"/></svg>
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M7 21h10M5 7h14M5 7l-3 7a3.5 3.5 0 0 0 6 0L5 7zm14 0-3 7a3.5 3.5 0 0 0 6 0l-3-7z"/></svg>
         </div>
         <h1>DisputeDesk</h1>
       </div>
@@ -171,7 +171,7 @@
     </div>
   </section>
 
-  <footer><span>DisputeDesk judge guide</span><span>Page 1 of 2</span></footer>
+  <footer><span>DisputeDesk judge guide. Built by Kaveetiran A/L Sitambaram, with Claude Code as coding assistant</span><span>Page 1 of 2</span></footer>
 </div>
 
 <!-- Page 2 -->
@@ -241,7 +241,7 @@
     </div>
   </section>
 
-  <footer><span>DisputeDesk judge guide</span><span>Page 2 of 2</span></footer>
+  <footer><span>DisputeDesk judge guide. Built by Kaveetiran A/L Sitambaram, with Claude Code as coding assistant</span><span>Page 2 of 2</span></footer>
 </div>
 
 </body>

@@ -15,12 +15,12 @@ const KINDS: { key: AuditKind | "all"; label: string }[] = [
 
 const KIND_STYLE: Record<string, { icon: typeof Bot; tone: string }> = {
   agent_decision: { icon: Bot, tone: "bg-sky-soft text-sky" },
-  policy_gate: { icon: SlidersHorizontal, tone: "bg-ink/[0.07] text-ink" },
+  policy_gate: { icon: SlidersHorizontal, tone: "bg-brand-soft text-brand" },
   paypal_response: { icon: ArrowDownLeft, tone: "bg-pandan-soft text-pandan" },
-  paypal_request: { icon: ArrowUpRight, tone: "bg-paper text-muted" },
+  paypal_request: { icon: ArrowUpRight, tone: "bg-well text-muted" },
   guardrail: { icon: ShieldCheck, tone: "bg-chili-soft text-chili" },
   seller_action: { icon: UserRound, tone: "bg-turmeric-soft text-turmeric-ink" },
-  system: { icon: Cog, tone: "bg-paper text-muted" },
+  system: { icon: Cog, tone: "bg-well text-muted" },
 };
 
 export default async function AuditPage({ searchParams }: { searchParams: Promise<{ kind?: string; case?: string }> }) {
@@ -51,15 +51,15 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
 
       <Panel>
         <div className="border-b border-rule px-4 py-3 sm:px-5">
-          <div role="tablist" aria-label="Filter entries" className="flex flex-wrap gap-1 rounded-lg bg-paper p-1">
+          <div role="tablist" aria-label="Filter entries" className="flex flex-wrap gap-1 rounded-xl bg-well p-1">
             {KINDS.map((k) => (
               <Link
                 key={k.key}
                 role="tab"
                 aria-selected={kind === k.key}
                 href={qs(k.key)}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium ${
-                  kind === k.key ? "bg-surface text-ink shadow-[0_1px_2px_rgba(24,33,74,0.12)]" : "text-muted hover:text-ink"
+                className={`rounded-lg px-3.5 py-1.5 text-[0.85rem] font-medium transition-all ${
+                  kind === k.key ? "bg-surface text-ink shadow-[var(--shadow-soft)]" : "text-muted hover:text-ink"
                 }`}
               >
                 {k.label}
@@ -78,7 +78,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
               const Icon = style.icon;
               return (
                 <li key={e.id} className="flex gap-3 px-4 py-3.5 sm:px-5">
-                  <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${style.tone}`} title={KINDS.find((k) => k.key === e.kind)?.label ?? e.kind}>
+                  <span className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${style.tone}`} title={KINDS.find((k) => k.key === e.kind)?.label ?? e.kind}>
                     <Icon className="h-4 w-4" aria-hidden />
                   </span>
                   <div className="min-w-0 flex-1">
@@ -97,7 +97,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
                     {e.data !== null && typeof e.data === "object" && Object.keys(e.data).length > 0 && (
                       <details className="mt-1.5">
                         <summary className="cursor-pointer text-xs font-medium text-ink-soft">Details</summary>
-                        <pre className="mt-1.5 max-h-72 overflow-auto rounded-lg bg-paper p-3 text-xs">{JSON.stringify(e.data, null, 2)}</pre>
+                        <pre className="mt-1.5 max-h-72 overflow-auto rounded-xl bg-well p-3 text-xs">{JSON.stringify(e.data, null, 2)}</pre>
                       </details>
                     )}
                   </div>

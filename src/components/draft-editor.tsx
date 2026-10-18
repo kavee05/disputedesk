@@ -35,14 +35,14 @@ export function DraftEditor({
       <label htmlFor={`draft-${runId}`} className="text-sm text-muted">
         {copy.explain}
       </label>
-      <div className="mt-2 rounded-lg border border-rule-strong bg-surface focus-within:border-sky focus-within:ring-2 focus-within:ring-sky/15">
+      <div className="mt-2 rounded-xl border border-rule-strong bg-surface transition focus-within:border-brand focus-within:ring-4 focus-within:ring-brand/10">
         <textarea
           id={`draft-${runId}`}
           value={text}
           onChange={(e) => setText(e.target.value)}
           readOnly={!editable || pending}
           rows={Math.min(14, Math.max(5, Math.ceil(text.length / 75)))}
-          className="block w-full resize-y rounded-t-lg bg-transparent p-3.5 text-[0.92rem] leading-relaxed outline-none read-only:bg-paper/60"
+          className="block w-full resize-y rounded-t-xl bg-transparent p-4 text-[0.92rem] leading-relaxed outline-none read-only:bg-well/60"
         />
         <div className="flex items-center justify-between gap-3 border-t border-rule px-3.5 py-2 text-xs">
           <span className="text-muted">{editable ? (text !== initial ? "Edited. Your version is what gets sent." : "You can edit this before sending.") : "Read only"}</span>

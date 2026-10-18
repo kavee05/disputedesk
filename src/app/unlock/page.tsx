@@ -11,14 +11,14 @@ export default function UnlockPage() {
   return (
     <>
       <PageHeader title="Unlock changes" intro="This deployment is read-only for visitors. Enter the passcode to run the agent, approve drafts or change the policy." />
-      <form action={action} className="flex max-w-md flex-col gap-4 rounded-xl border border-rule bg-surface p-5 shadow-[var(--shadow-panel)]">
+      <form action={action} className="flex max-w-md flex-col gap-4 rounded-[20px] bg-surface p-6 shadow-[var(--shadow-soft)] ring-1 ring-rule/70">
         <label className="block">
           <span className="font-medium">Passcode</span>
           <input
             name="passcode"
             type="password"
             autoComplete="current-password"
-            className="mt-1.5 w-full rounded-lg border border-rule-strong bg-surface px-3 py-2 outline-none focus:border-sky focus:ring-2 focus:ring-sky/15"
+            className="mt-1.5 w-full rounded-xl border border-rule-strong bg-well px-3.5 py-2.5 outline-none transition focus:border-brand focus:bg-surface focus:ring-4 focus:ring-brand/10"
           />
         </label>
         <button type="submit" disabled={pending} className={`${BUTTON_BASE} ${BUTTON_STYLES.primary} w-fit`}>
