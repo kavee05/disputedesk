@@ -1,6 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="8" fill="#d99a1e"/>
-  <g fill="none" stroke="#18214a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" transform="translate(4 4)">
+  <defs>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5b4fe9"/>
+      <stop offset="1" stop-color="#7c5cf3"/>
+    </linearGradient>
+    <radialGradient id="light" cx="0" cy="0" r="1.1">
+      <stop offset="0" stop-color="#a78bfa" stop-opacity="0.9"/>
+      <stop offset="0.55" stop-color="#a78bfa" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shade" cx="1" cy="1" r="1.2">
+      <stop offset="0" stop-color="#372ac4" stop-opacity="0.95"/>
+      <stop offset="0.6" stop-color="#372ac4" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="32" height="32" rx="9" fill="url(#base)"/>
+  <rect width="32" height="32" rx="9" fill="url(#light)"/>
+  <rect width="32" height="32" rx="9" fill="url(#shade)"/>
+  <g fill="none" stroke="#ffffff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" transform="translate(4 4)">
     <path d="M12 3v18M7 21h10M5 7h14M5 7l-3 7a3.5 3.5 0 0 0 6 0L5 7zm14 0-3 7a3.5 3.5 0 0 0 6 0l-3-7z"/>
   </g>
 </svg>
