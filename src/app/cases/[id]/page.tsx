@@ -186,7 +186,7 @@ export default async function CasePage({ params }: { params: Promise<{ id: strin
                 </div>
               ))}
               <dt className="text-muted">Allowed now</dt>
-              <dd>{c.links.filter((l) => l !== "self").map((l) => l.replace(/_/g, " ")).join(", ") || (isOpen(status) ? "Nothing while PayPal is processing" : "Nothing, the case is closed")}</dd>
+              <dd>{c.links.filter((l) => l !== "self").map((l) => l.replace(/_/g, " ")).join(", ") || (isOpen(status) ? "Nothing while it is processing" : "Nothing, the case is closed")}</dd>
             </dl>
           </Panel>
 
