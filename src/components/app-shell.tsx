@@ -42,7 +42,7 @@ function SidebarBody({ mode, aiLabel, readOnly, onNavigate }: { mode: "sandbox" 
         <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${mode === "sandbox" ? "bg-sky" : "bg-turmeric"}`} aria-hidden />
         <span className="min-w-0">
           <span className="block text-[0.8rem] font-semibold text-ink">{mode === "sandbox" ? "PayPal Sandbox" : "Demo mode"}</span>
-          <span className="block text-[0.72rem] leading-snug text-muted">{mode === "sandbox" ? "Live test data from PayPal" : "Simulated PayPal, fictional cases"}</span>
+          <span className="block text-[0.72rem] leading-snug text-muted">{mode === "sandbox" ? "Test money only, status from PayPal" : "Simulated PayPal, no real money moves"}</span>
         </span>
       </div>
 
@@ -121,6 +121,12 @@ export function AppShell({ mode, aiLabel, readOnly, children }: { mode: "sandbox
           <Link href="/" className="flex items-center gap-2.5">
             <Mark size="sm" />
             <span className="text-lg font-bold tracking-[-0.02em] text-ink">DisputeDesk</span>
+            <span
+              className={`rounded-md px-1.5 py-0.5 text-[0.68rem] font-semibold leading-none ${mode === "sandbox" ? "bg-sky-soft text-sky" : "bg-turmeric-soft text-turmeric-ink"}`}
+              title={mode === "sandbox" ? "PayPal Sandbox: test accounts and test money only" : "Demo mode: simulated PayPal and fictional cases, no money moves"}
+            >
+              {mode === "sandbox" ? "Sandbox" : "Demo"}
+            </span>
           </Link>
           <button
             type="button"

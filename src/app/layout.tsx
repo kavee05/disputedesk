@@ -29,7 +29,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         >
           Skip to content
         </a>
-        <ModeStrip />
         <AppShell mode={config.mode} aiLabel={ai ? ai.label : "Offline rules (no AI key)"} readOnly={!writable}>
           {children}
         </AppShell>
@@ -38,18 +37,3 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   );
 }
 
-function ModeStrip() {
-  if (config.mode === "sandbox") {
-    return (
-      <div className="bg-ink px-4 py-1.5 text-center text-[0.78rem] text-white/85">
-        <strong className="font-semibold text-white">PayPal Sandbox.</strong> Test accounts and test money only. Every status comes from a PayPal Sandbox
-        response.
-      </div>
-    );
-  }
-  return (
-    <div className="hatch px-4 py-1.5 text-center text-[0.78rem] text-turmeric-ink">
-      <strong className="font-semibold">Demo mode.</strong> PayPal is simulated with fictional cases, so no real or sandbox money moves.
-    </div>
-  );
-}
